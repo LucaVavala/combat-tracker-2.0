@@ -1,0 +1,157 @@
+body {
+  font-family: sans-serif;
+  background: #f5f5f5;
+  margin: 0;
+  padding: 0;
+  color: #333;
+}
+
+header {
+  background: #007acc;
+  color: #fff;
+  padding: 1em;
+  text-align: center;
+}
+
+/* Use a grid layout for two columns on wide screens */
+.grid-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1em;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1em;
+  background: #fff;
+}
+
+.column {
+  background: #e9e9e9;
+  padding: 0.5em;
+  border-radius: 4px;
+}
+
+h2, h3 {
+  text-align: center;
+}
+
+form input, form select, form button {
+  width: 100%;
+  margin: 0.5em 0;
+  padding: 0.5em;
+  box-sizing: border-box;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+}
+
+.combatantCard {
+  background: #fafafa;
+  padding: 0.5em;
+  margin: 0.5em;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.combatantCard h3 {
+  margin: 0 0 0.3em;
+}
+
+.statRow {
+  display: flex;
+  align-items: center;
+  margin: 0.3em 0;
+}
+
+.statRow span {
+  flex: 1;
+}
+
+.statRow button {
+  font-size: 0.8em;
+  padding: 0.2em 0.4em;
+  margin-left: 0.3em;
+  cursor: pointer;
+}
+
+.removeBtn {
+  background: #d9534f;
+  color: #fff;
+  border: none;
+  padding: 0.3em 0.6em;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+#eventLog, #dataManagement {
+  margin-top: 1em;
+  padding: 1em;
+  background: #e9e9e9;
+  border-radius: 4px;
+  text-align: center;
+}
+
+#logList {
+  list-style: none;
+  padding: 0;
+  max-height: 200px;
+  overflow-y: auto;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+#logList li {
+  padding: 0.3em;
+  border-bottom: 1px solid #eee;
+}
+
+/* Visual cues for dice roll results */
+.hitResult {
+  font-weight: bold;
+  color: green;
+}
+.missResult {
+  font-weight: bold;
+  color: red;
+}
+
+#dataManagement button {
+  margin: 0.5em;
+  padding: 0.5em 1em;
+  cursor: pointer;
+}
+
+/* Modal styles for Foe Schticks */
+.modal {
+  display: none; 
+  position: fixed;
+  z-index: 10;
+  padding-top: 100px;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0,0,0,0.4);
+}
+
+.modal-content {
+  background-color: #fefefe;
+  margin: auto;
+  padding: 1em;
+  border: 1px solid #888;
+  width: 80%;
+  max-width: 400px;
+  border-radius: 4px;
+  text-align: center;
+}
+
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 1.5em;
+  font-weight: bold;
+  cursor: pointer;
+}
