@@ -20,7 +20,14 @@ main {
   background: #fff;
 }
 
-.grid-container {
+.sectionsContainer {
+  display: flex;
+  gap: 1em;
+}
+
+/* The left "Players" section and the right "NPC" section 
+   will each have their own grid for the cards. */
+#playersSection ul, #npcsSection ul {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1em;
@@ -45,7 +52,6 @@ ul {
 .combatantCard {
   background: #fafafa;
   padding: 0.5em;
-  margin: 0.5em 0;
   border: 1px solid #ddd;
   border-radius: 4px;
 }
@@ -118,7 +124,7 @@ ul {
   cursor: pointer;
 }
 
-/* Modal (if you want to add foe schticks) */
+/* Modal (foe schticks) */
 .modal {
   display: none;
   position: fixed;
