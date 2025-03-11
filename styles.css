@@ -103,7 +103,6 @@ ul {
   border-bottom: 1px solid #eee;
 }
 
-/* Visual cues for dice roll results */
 .hitResult {
   font-weight: bold;
   color: green;
@@ -119,7 +118,7 @@ ul {
   cursor: pointer;
 }
 
-/* Modal for foe schticks */
+/* Modal (if you want to add foe schticks) */
 .modal {
   display: none;
   position: fixed;
