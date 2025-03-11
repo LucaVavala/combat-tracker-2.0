@@ -2,19 +2,18 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Feng Shui 2 Combat Tracker</title>
-  <link rel="stylesheet" href="styles.css" />
-  <link rel="manifest" href="manifest.json" />
+  <link rel="stylesheet" href="styles.css"/>
+  <link rel="manifest" href="manifest.json"/>
 </head>
 <body>
   <header>
     <h1>Feng Shui 2 Combat Tracker</h1>
   </header>
   <main>
-    <!-- Grid layout container -->
     <div class="grid-container">
-      <!-- Players Section -->
+      <!-- PLAYERS SECTION -->
       <section id="playersSection">
         <h2>Players</h2>
         <ul id="pcList"></ul>
@@ -24,14 +23,14 @@
           <select id="playerAttacker" required></select>
           <label for="npcTarget">Target NPC:</label>
           <select id="npcTarget" required></select>
-          <input type="text" id="playerRollResult" placeholder="Roll Result (e.g., 18 or 18!)" required />
+          <input type="text" id="playerRollResult" placeholder="Roll Result (e.g. 18 or 18!)" required />
           <input type="number" id="playerModifier" placeholder="Modifier (optional)" />
           <input type="number" id="playerWeaponDamage" placeholder="Weapon Damage" required />
           <button type="submit">Apply Player Attack</button>
         </form>
       </section>
-
-      <!-- NPCs Section -->
+      
+      <!-- NPCS SECTION -->
       <section id="npcsSection">
         <h2>NPCs</h2>
         <form id="addEnemyForm">
@@ -43,8 +42,9 @@
             <option value="boss">Boss</option>
             <option value="uberboss">Uber Boss</option>
           </select>
-          <!-- Mook Template Dropdown -->
-          <div id="mookTemplateContainer" style="display: none;">
+          
+          <!-- Mook Template -->
+          <div id="mookTemplateContainer" style="display:none;">
             <label for="mookTemplate">Mook Template:</label>
             <select id="mookTemplate">
               <option value="" disabled selected>Select Mook Template</option>
@@ -67,28 +67,33 @@
               <option value="hoppingVampire">Hopping Vampire</option>
             </select>
           </div>
-          <!-- Featured Foe Template Dropdown -->
-          <div id="featuredTemplateContainer" style="display: none;">
+          
+          <!-- Featured Foe Template -->
+          <div id="featuredTemplateContainer" style="display:none;">
             <label for="featuredTemplate">Featured Foe Template:</label>
             <select id="featuredTemplate">
               <option value="" disabled selected>Select Template</option>
-              <!-- Populated by script.js -->
             </select>
           </div>
-          <!-- Weapon Dropdown (for non-mook) -->
-          <div id="weaponContainer" style="display: none;">
+          
+          <!-- Weapon dropdown (for non-mooks) -->
+          <div id="weaponContainer" style="display:none;">
             <label for="weaponSelect">Weapon:</label>
             <select id="weaponSelect">
               <option value="" disabled selected>Select Weapon</option>
             </select>
           </div>
-          <!-- For Mooks, a count input -->
-          <div id="mookCountContainer" style="display: none;">
+          
+          <!-- Mook Count -->
+          <div id="mookCountContainer" style="display:none;">
             <input type="number" id="mookCount" placeholder="Mook Count" value="1" required />
           </div>
+          
           <button type="submit">Add Enemy</button>
         </form>
+        
         <ul id="npcList"></ul>
+        
         <h3>NPC Attack</h3>
         <form id="npcActionForm">
           <label for="npcAttacker">Attacking NPC:</label>
@@ -100,26 +105,25 @@
             <div id="npcRollResult"></div>
             <input type="number" id="npcModifier" placeholder="Modifier (optional)" />
           </div>
-          <!-- We no longer ask for weapon damage here; it’s taken from assigned weapon. -->
           <button type="submit">Apply NPC Attack</button>
         </form>
       </section>
     </div>
-
-    <!-- Event Log -->
+    
+    <!-- EVENT LOG -->
     <section id="eventLog">
       <h2>Event Log</h2>
       <ul id="logList"></ul>
     </section>
-
-    <!-- Data Management -->
+    
+    <!-- DATA MANAGEMENT -->
     <section id="dataManagement">
       <button id="exportButton">Export Data</button>
-      <input type="file" id="importFileInput" accept=".json" style="display: none;" />
+      <input type="file" id="importFileInput" accept=".json" style="display:none;"/>
       <button id="importButton">Import Data</button>
     </section>
-
-    <!-- Modal for adding schticks -->
+    
+    <!-- Schtick Modal (optional) -->
     <div id="schtickModal" class="modal">
       <div class="modal-content">
         <span id="closeModal" class="close">&times;</span>
@@ -130,7 +134,7 @@
         <button id="addSchtickButton">Add Schtick</button>
       </div>
     </div>
-
+    
     <script src="script.js"></script>
 </body>
 </html>
