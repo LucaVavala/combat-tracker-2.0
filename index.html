@@ -56,4 +56,81 @@
               <option value="cornerHoods">Corner Hoods</option>
               <option value="cartelGoons">Cartel Goons</option>
               <option value="militaryPolice">Military Police</option>
-              <option value="bentC
+              <option value="bentCops">Bent Cops</option>
+              <option value="eunuchSorcerers">Eunuch Sorcerers</option>
+              <option value="imperialGuards">Imperial Guards</option>
+              <option value="bandits">Bandits</option>
+              <option value="nineteenthCenturySoldiers">19th Century Soldiers</option>
+              <option value="ruinRunners">Ruin Runners</option>
+              <option value="simianArmymen">Simian Armymen</option>
+              <option value="zombies">Zombies</option>
+              <option value="hoppingVampire">Hopping Vampire</option>
+            </select>
+          </div>
+          <!-- Featured Foe Template Dropdown -->
+          <div id="featuredTemplateContainer" style="display: none;">
+            <label for="featuredTemplate">Featured Foe Template:</label>
+            <select id="featuredTemplate">
+              <option value="" disabled selected>Select Template</option>
+              <!-- Populated by script.js -->
+            </select>
+          </div>
+          <!-- Weapon Dropdown (for non-mook) -->
+          <div id="weaponContainer" style="display: none;">
+            <label for="weaponSelect">Weapon:</label>
+            <select id="weaponSelect">
+              <option value="" disabled selected>Select Weapon</option>
+            </select>
+          </div>
+          <!-- For Mooks, a count input -->
+          <div id="mookCountContainer" style="display: none;">
+            <input type="number" id="mookCount" placeholder="Mook Count" value="1" required />
+          </div>
+          <button type="submit">Add Enemy</button>
+        </form>
+        <ul id="npcList"></ul>
+        <h3>NPC Attack</h3>
+        <form id="npcActionForm">
+          <label for="npcAttacker">Attacking NPC:</label>
+          <select id="npcAttacker" required></select>
+          <label for="playerTarget">Target PC:</label>
+          <select id="playerTarget" required></select>
+          <div id="npcRollPanel">
+            <button type="button" id="npcRollDiceButton">Roll Dice (NPC)</button>
+            <div id="npcRollResult"></div>
+            <input type="number" id="npcModifier" placeholder="Modifier (optional)" />
+          </div>
+          <!-- We no longer ask for weapon damage here; it’s taken from assigned weapon. -->
+          <button type="submit">Apply NPC Attack</button>
+        </form>
+      </section>
+    </div>
+
+    <!-- Event Log -->
+    <section id="eventLog">
+      <h2>Event Log</h2>
+      <ul id="logList"></ul>
+    </section>
+
+    <!-- Data Management -->
+    <section id="dataManagement">
+      <button id="exportButton">Export Data</button>
+      <input type="file" id="importFileInput" accept=".json" style="display: none;" />
+      <button id="importButton">Import Data</button>
+    </section>
+
+    <!-- Modal for adding schticks -->
+    <div id="schtickModal" class="modal">
+      <div class="modal-content">
+        <span id="closeModal" class="close">&times;</span>
+        <h3>Select Foe Schtick</h3>
+        <select id="schtickSelect">
+          <option value="" disabled selected>Select Schtick</option>
+        </select>
+        <button id="addSchtickButton">Add Schtick</button>
+      </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
