@@ -1,6 +1,8 @@
 // database.js
 
-// Updated weaponDatabase, containing your full list of weapons and damages:
+//
+// 1) Full weaponDatabase with your updated entries
+//
 const weaponDatabase = [
   { name: "Bow and Arrow", damage: "7/5/–" },
   { name: "Black powder pistol", damage: "7/3/6" },
@@ -87,10 +89,96 @@ const weaponDatabase = [
   { name: "Winchester Model 70", damage: "12/5/5" }
 ];
 
-// Existing schtickDatabase remains the same:
+//
+// 2) New, comprehensive schtickDatabase
+//
 const schtickDatabase = [
-  "Headshot: After a successful attack, foe may decide that hero takes –2 penalty to skill checks until beginning of subsequent fight. Usable once per fight.",
-  "Pedal to the Metal [Driving]: When driving as the pursuer in a chase, gain +2 Driving if one or more PC drivers have fewer Chase Points.",
-  "Ram-Alama-Bam [Driving]: When driving, if foe rams a vehicle, gains +2 Frame. +4 Damage Value when foe hits a pedestrian.",
-  "Be the Shield: Spend 1 shot to lower bodyguard’s Defense by 2, increasing ally’s Defense by 2, until bodyguard goes down.",
-  "Shibuya Slide [Driving]: When driving as the evader in a chase, gain +2 Driving if one or more PC drivers have fewer Cha
+  "Ablative Lackey: If at least one mook is up, as an interrupt after the foe takes Wound Points, the foe takes 0 Wound Points and 1 mook goes down.",
+  "Anti-Mystical: +1 Defense vs. Creature Powers and Sorcery attacks.",
+  "Anti-Tech: +1 Defense vs. Guns, Mutant, and Scroungetech attacks.",
+  "Back to the Wall: If the foe is attacked by more than one character in any sequence, the shot cost of a standard attack drops to 2 until end of sequence.",
+  "Bark of the Underdog: +2 Toughness when more than half the mooks on the foe’s side have been put down.",
+  "Bone Fissure (Sorcerer, Supernatural Creature): Spend 1 shot; if the foe is still active at the start of the next keyframe, target hero takes 7 Wound Points at the start of their next fight.",
+  "Broken Trigram (Sorcerer): Spend 1 shot; if the foe is still active at the start of the next keyframe, target hero suffers a financial setback in a later scene.",
+  "Clear Aim: +3 Attack vs. characters whose current Defense exceeds their base Defense.",
+  "Contagion (Supernatural Creature): On a successful Bite attack, target hero makes a Defense Check. On failure, they take 1 Impairment until end of fight and require a storyline cure.",
+  "Copy Cat: After missing a Dodging hero, the foe gains +2 Defense until next keyframe.",
+  "Cursed Weapon (Sorcerer, Supernatural Creature): When a hero misses a weapon attack, subsequent attacks with that weapon take a –2 penalty and cost +1 shot.",
+  "Cyclical Flow (Martial Artist): Damage equals current shot number +5.",
+  "Defensive Mastery (Martial Artist): When the foe takes more than 10 Wound Points from a weapon-wielding hero, the foe may spend 1 shot to Disarm the hero.",
+  "Delayed Death Strike (Martial Artist): On a successful unarmed strike, target hero starts their next fight with 1 Mark of Death.",
+  "Disarm: The foe’s first successful hit against a hero each fight disarms that hero.",
+  "Disfiguring Strike: On an attack with an Outcome of 4 or more, the target hero suffers a gruesome (if temporary) injury that leads to a complication.",
+  "Disrupt Meridian (Martial Artist): Spend 6 shots as an interrupt after a successful attack. Roll a die: Even result, damage doubles. Odd result, hero takes 0 damage.",
+  "Domination (Sorcerer, Supernatural Creature, Scroungetech): The foe spends 1 shot and forces a hero to make a Difficulty 10 Will Check. On failure, the foe chooses their next attack target.",
+  "Don't Turn Your Back: +2 Attack if the foe has not been attacked since its last attack.",
+  "Dread Resurrection (Sorcerer): Spend 1 shot; if the foe is still active at start of next keyframe, an enemy of the target will return from the dead in a later scene.",
+  "Energy Drain (Mutant, Supernatural Creature, Scroungetech): +2 Attack if any hero spent a Fortune point since foe’s previous attack.",
+  "Explosive Vest: When the foe goes down, all nearby heroes take a Smackdown of 12.",
+  "Flying Guillotine (Martial Artist): On a successful Martial Arts ranged hit, note damage based on a Damage Value of 20. If not removed within 3 shots, hero suffers that damage.",
+  "Furious Wrath: If the foe’s last attack missed, its current one gains +1 Attack and +3 Damage.",
+  "Garrotte of Destiny (Sorcerer, Supernatural Creature): At the beginning of each sequence, all heroes lose 1 Fortune while this foe is active.",
+  "Headshot: After a successful attack, the foe may decide that a hero takes –2 penalty to skill checks until beginning of a subsequent fight.",
+  "Heal Steal (Sorcerer): When a hero uses a healing effect, the foe spends 1 shot to cancel the effect if it succeeds on a Sorcery check against the hero’s Defense.",
+  "Helix Shredder (Scroungetech): On a successful attack, the target takes –1 penalty to Up Checks until end of fight.",
+  "Hot Metal (Sorcerer, Supernatural Creature, Mutant): On a successful hit, a hero carrying a weapon must drop that weapon or suffer a –2 attack penalty until next keyframe.",
+  "Implant Suggestion (Sorcerer, Supernatural Creature, Scroungetech): Spend 1 shot; if the foe is still active at the start of the next keyframe, target hero takes an action in favor of the foe’s faction in a later scene.",
+  "Inspire Loyalty: When this foe goes down, all active Featured Foes make an interrupt attack at a shot cost of 0.",
+  "Kneecapper: When the foe’s close attack hits with an Outcome of 3 or more, the target loses 3 Speed until end of fight.",
+  "Last Rally: As an interrupt after taking 35+ Wound Points, the foe makes an attack at +2 Attack and +6 Damage.",
+  "Nuh-uh: As an interrupt when a hero regains any Fortune, spend 3 shots to attack that hero.",
+  "Offended Honor: +1 Damage for each hero after the first that has attacked it during the current fight.",
+  "Quantum Bastard (Scroungetech): While the foe is up, all heroes take 5 Wound Points each time they roll boxcars.",
+  "Teleport: The foe can instantly move from ranged to close combat for an attack, then back to ranged distance.",
+  "Toxic Dart: When downed, the foe makes an attack against any hero. If successful, 10 minutes after the fight ends, the hero must make a Constitution Check or take 15 Wound Points.",
+  "Turnabout: While the foe is up, this and all other foes lose 5 Wound Points on every hero’s successful Up Check.",
+  "Fender Blender: If a foe is hit as a pedestrian during a chase, the foe takes no Wound Points. The Wound Points the foe would have taken are added to the Driver’s Chase Point total as a ram or sideswipe.",
+  "Inspire Fanaticism: When a weapon-wielding hero announces an attack while at least 1 mook is still up, the foe spends 1 shot as an interrupt. One mook goes down. Roll a die: Odd result, the attack is nullified, and the hero is Disarmed.",
+  "Leveling Strike: After a successful attack, the target hero is at –1 Attack vs. mooks while the foe remains active. This penalty is not cumulative.",
+  "Mach Schnell!: Add +3 to mook initiative while this foe is up.",
+  "Medkit: Spend 3 shots to remove 7 Wound Points from a Boss or Featured Foe.",
+  "Mimic Form: Spend 1 shot as an interrupt after taking Wound Points from an attack with a higher Damage Value than the foe’s weapons. The foe’s Damage Value now equals that of the attacking hero.",
+  "Monkey See, Monkey Crouch: When a hero Dodges, the foe gains +3 Defense against the next attack. This is not cumulative.",
+  "Not So Fast: When a hero Cheeses It, this foe may spend 3 shots as an interrupt to deal that hero 14 Damage. This does not expend the bad guys’ one chance to stop the hero from Cheesing It.",
+  "Numerical Superiority: Add +2 Toughness when more than half the mooks on the foe’s side are still standing.",
+  "Oxygen Sink (Mutant): While the foe is up, heroes take –1 penalty to Up Checks.",
+  "Parting Shot: If the foe successfully Cheeses It despite a hero’s attempt to stop it, the hero takes 14 Damage.",
+  "Pause That Refreshes: As an interrupt when a hero makes a Dodge, the foe may remove 4 Wound Points from any foe, including itself.",
+  "Pep Talk: Spend 1 shot and make an attack against the Defense of the hero the foe last tried to hit. On a success, a number of downed mooks equal to 1 plus the Outcome recovers, and the foe spends 2 more shots.",
+  "Protective Fury (Martial Artist): When a mook is downed by a weapon-wielding hero, the foe may spend 1 shot to Disarm that hero.",
+  "Radiation Poisoning (Scroungetech, Mutant): Spend 3 shots and beat a hero’s Defense with a Scroungetech or Mutant Check; if the foe is still active at the end of a sequence, that hero takes 22 Damage.",
+  "Reinforced Skeleton (Scroungetech, Mutant, Supernatural Creature): On a failed Martial Arts attack against the foe, the attacker takes Wound Points equal to the difference between the result and the foe’s Defense.",
+  "Reversion Curse (Sorcerer, Ancient or Past Martial Artist): Spend 1 shot; if the foe is still active at the start of the next keyframe, all Transformed Animal heroes gain 5 Reversion Points at the start of the next session.",
+  "Requires Group Effort: +1 Damage for each hero who has yet to attack the foe during the current fight.",
+  "Retrench: Regain 7 Wound Points at the end of any sequence in which a hero Dodged.",
+  "Rock Hard (Martial Artist, Supernatural Creature, Cyborg): Heroes making successful unarmed attacks against this foe take 2 Wound Points per attack.",
+  "Screaming Steel (Sorcerer, Supernatural Creature, Mutant): On a successful attack against a hero fighting with a weapon, all mooks make a 0-shot cost attack on the hero as an interrupt every time the hero attacks with that weapon.",
+  "Severed Love Line (Sorcerer): Spend 1 shot; if the foe is still active at the start of the next keyframe, target hero suffers a romantic setback in a later scene.",
+  "Shattered Loyalties (Sorcerer): Spend 1 shot; if the foe is still active at the start of the next keyframe, target hero suffers a betrayal from a friendly supporting character in a later scene.",
+  "Shouted Orders: As an interrupt when a mook hits a hero, the foe may spend 1 shot to add 4 Damage to the mook’s hit.",
+  "Skull-Mounted Targeting Goggles (Cyborg): Add +3 Initiative if Wound Points are less than 20.",
+  "Slipstrike (Martial Artist): When this foe’s attack against a hero is successful but deals less than 5 Wound Points to that hero, the hero is Disarmed.",
+  "Spin the Cylinder (Featured Foe with Guns attack): After Reloading, the foe’s next attack is at +2 Attack and +6 Damage.",
+  "Stasis Field (Scroungetech): On a successful attack with an Outcome of 3 or more, +1 to the Reload value of all guns the hero carries.",
+  "Stunt Stopper: As an interrupt when a hero announces a stunt, spend 3 shots to make an attack against the hero.",
+  "Supergun (Guns character): If the foe brings a hero to 35 or more Wound Points, the hero gains an additional Mark of Death.",
+  "T is for Target: As an interrupt after a failed attack on a hero, spend 1 shot; up to three mooks, as an interrupt, may attack the hero.",
+  "Tactical Genius: Spend 1 shot; until the foe goes down, mooks gain +2 Attack.",
+  "Taskmaster (Boss): Add +3 to Featured Foe Initiative while the Boss is up.",
+  "Tongue Grab (Supernatural Creature, Mutant): Spend 1 shot; the foe draws target hero from ranged to close combat distance.",
+  "Vehicle Hit: Spend 3 shots and make an Attack against a driver’s Driving AV. The Driver’s vehicle takes Outcome +11 Chase Points, counting as a ram or sideswipe.",
+  
+  // DRIVING SCHTICKS
+  "Armor Plated (Driving): +2 to the Frame of the foe’s starting vehicle.",
+  "Rehearsed Getaway (Driving): –3 to Chase Points dealt to the foe’s vehicle when a hero narrows the gap.",
+  "Shibuya Slide (Driving): When driving as the evader in a chase, gain +2 Driving if one or more hero drivers have fewer Chase Points.",
+  "Pedal to the Metal (Driving): When driving as the pursuer in a chase, gain +2 Driving if one or more hero drivers have fewer Chase Points.",
+  "Wrench the Wheel (Driving): –3 to Chase Points dealt to the foe’s vehicle in any ram or sideswipe.",
+  "Braced for Impact (Driving): When the foe’s vehicle crashes, all occupants gain +4 Toughness against crash damage.",
+  "Counterslam (Driving): If the foe’s vehicle’s higher Frame gives an opposing vehicle a Bump value, that value increases by 3.",
+  "Dazed and Contused (Driving): Until the next keyframe, enemies exiting a vehicle the foe rammed or sideswiped take 1 point of Impairment and add 1 to all shot costs.",
+  "High Gear (Driving): If the foe’s Initiative is lower than that of the first hero Driver to act, the foe’s Initiative equals that hero’s Initiative –1.",
+  "Ram-Alama-Bam (Driving): When driving, if the foe rams a vehicle, gain +2 Frame. Also, +4 Damage Value when the foe hits a pedestrian.",
+  "Wicked Ride (Driving): +2 to the Handling of the foe’s starting vehicle."
+];
+
