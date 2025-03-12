@@ -20,24 +20,28 @@ main {
   background: #fff;
 }
 
-/* Widen main container on larger screens */
-@media (min-width: 1024px) {
-  main {
-    max-width: 1200px;
-  }
-}
-
 .columns {
   display: flex;
   justify-content: space-between;
+  flex-wrap: wrap;
 }
 
 .column {
   flex: 1;
-  margin: 0 0.5em;
+  margin: 0.5em;
   padding: 0.5em;
   background: #e9e9e9;
   border-radius: 4px;
+}
+
+/* Display character cards in two columns */
+#pcList li,
+#npcList li {
+  width: calc(50% - 1em);
+  display: inline-block;
+  vertical-align: top;
+  margin: 0.5em;
+  box-sizing: border-box;
 }
 
 h2, h3 {
@@ -54,16 +58,6 @@ form input, form select, form button {
 ul {
   list-style: none;
   padding: 0;
-}
-
-/* Two-column grid for character cards on larger screens */
-@media (min-width: 768px) {
-  #pcList,
-  #npcList {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1em;
-  }
 }
 
 .combatantCard {
@@ -127,7 +121,7 @@ ul {
   border-bottom: 1px solid #eee;
 }
 
-/* Visual cues for NPC Dice Roll results */
+/* Styling for visual cues in NPC Dice Roll results */
 .hitResult {
   font-weight: bold;
   color: green;
@@ -138,34 +132,27 @@ ul {
   color: red;
 }
 
-#dataManagement button {
-  margin: 0.5em;
-  padding: 0.5em 1em;
-  cursor: pointer;
-}
-
-/* Modal styles */
+/* Database panel styles */
 .modal {
   display: none;
   position: fixed;
-  z-index: 1000;
+  z-index: 10;
   left: 0;
   top: 0;
   width: 100%;
   height: 100%;
   overflow: auto;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0,0,0,0.4);
 }
 
 .modal-content {
   background-color: #fefefe;
-  margin: 5% auto;
+  margin: 10% auto;
   padding: 1em;
   border: 1px solid #888;
-  width: 90%;
-  max-width: 600px;
+  width: 80%;
+  max-width: 500px;
   border-radius: 4px;
-  position: relative;
 }
 
 .close {
@@ -176,28 +163,15 @@ ul {
   cursor: pointer;
 }
 
-.close:hover,
-.close:focus {
-  color: #000;
-}
-
-.weaponList, .schtickList {
-  margin-top: 0.5em;
-}
-
-/* New styles for the database list items */
-.modal-content ul li {
+/* Add spacing between database list items and pointer cursor */
+#weaponListDB li,
+#schtickListDB li {
   margin-bottom: 0.5em;
   cursor: pointer;
 }
 
-/* '+' button for database panel */
-.addDB {
-  background: #5cb85c;
-  color: #fff;
-  border: none;
-  padding: 0.3em 0.6em;
-  border-radius: 4px;
-  cursor: pointer;
-  margin-top: 0.5em;
+/* For schtick list items in the NPC card, add spacing and normal cursor */
+.schtickList ul li {
+  margin-bottom: 0.5em;
+  cursor: default;
 }
