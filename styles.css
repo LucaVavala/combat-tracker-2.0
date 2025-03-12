@@ -146,7 +146,7 @@ ul {
 
 /* Modal styles */
 .modal {
-  display: none; /* Hidden by default */
+  display: none;
   position: fixed;
   z-index: 1000;
   left: 0;
@@ -185,10 +185,10 @@ ul {
   margin-top: 0.5em;
 }
 
-.schtickList ul {
-  list-style: disc inside;
-  margin: 0.5em 0;
-  padding-left: 1em;
+/* New styles for the database list items */
+.modal-content ul li {
+  margin-bottom: 0.5em;
+  cursor: pointer;
 }
 
 /* '+' button for database panel */
