@@ -214,8 +214,7 @@ function updateAttackDropdowns() {
 }
 
 // ------------------- Modal Panel for Database Items -------------------
-
-// Note: Ensure that this variable is declared only once.
+// Declare modal variables only once.
 let currentNpcIdModal = null;
 const dbPanel = document.getElementById('dbPanel');
 const dbClose = document.getElementById('dbClose');
@@ -236,7 +235,7 @@ function openDBPanel(npcId) {
     });
     weaponListDB.appendChild(li);
   });
-  // Populate schticks list (only bolding the title before the colon)
+  // Populate schticks list (bold only the title before the colon)
   schtickListDB.innerHTML = '';
   schtickDatabase.forEach(item => {
     const li = document.createElement('li');
@@ -309,6 +308,7 @@ function attachPcListeners() {
       if (pc) { pc.attack--; if(pc.attack < 0) pc.attack = 0; updatePcList(); logEvent(`Decreased ${pc.name}'s Attack to ${pc.attack}`); }
     });
   });
+  // (Repeat similar listeners for Backup Attack, Defense, Toughness, Speed, Fortune, and Wound Points)
   document.querySelectorAll('.incBackupAttack').forEach(btn => {
     btn.addEventListener('click', () => {
       const id = parseInt(btn.dataset.id, 10);
@@ -417,7 +417,7 @@ function attachNpcListeners() {
       if (npc) { npc.attack--; if(npc.attack < 0) npc.attack = 0; updateNpcList(); logEvent(`Decreased ${npc.name}'s Attack to ${npc.attack}`); }
     });
   });
-  // (Repeat similar listeners for Defense, Toughness, Speed, Fortune, Wound Points, Mook Count, Remove button)
+  // (Include similar listeners for Defense, Toughness, Speed, Fortune, Wound Points, Mook Count, Remove buttons)
 }
 
 function updateAttackDropdowns() {
@@ -456,13 +456,7 @@ function updateAttackDropdowns() {
 }
 
 // ------------------- Modal Panel for Database Items -------------------
-// (Note: currentNpcIdModal is declared only once here)
-let currentNpcIdModal = null;
-const dbPanel = document.getElementById('dbPanel');
-const dbClose = document.getElementById('dbClose');
-const weaponListDB = document.getElementById('weaponListDB');
-const schtickListDB = document.getElementById('schtickListDB');
-
+// (currentNpcIdModal is declared only once above)
 function openDBPanel(npcId) {
   currentNpcIdModal = npcId;
   // Populate weapons list
@@ -734,7 +728,7 @@ npcRollDiceButton.addEventListener('click', () => {
   resultText += `Final Check = ${baseAttack} + ${diceOutcome} + Modifier (${modifier}) = ${finalCheckHTML}`;
   if (boxcars) resultText += " (Boxcars!)";
   npcRollResultDiv.innerHTML = resultText;
-  logEvent(`NPC Dice Roll: +die=${posTotal} (init ${posInitial}), -die=${negTotal} (init ${negInitial}), Outcome=${diceOutcome}. Final Check = ${baseAttack} + ${diceOutcome} + ${modifier} = ${finalCheck}${boxcars?" (Boxcars!)":""}`);
+  logEvent(`NPC Dice Roll: +die=${posTotal} (init ${posInitial}), -die=${negTotal} (init ${negInitial}), Outcome=${diceOutcome}. Final Check = ${baseAttack} + ${diceOutcome} + ${modifier} = ${finalCheck}${boxcars ? " (Boxcars!)" : ""}`);
 });
 
 npcActionForm.addEventListener('submit', (e) => {
