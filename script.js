@@ -151,7 +151,7 @@ function updateNpcList() {
         });
         cardHTML += `</ul></div>`;
       }
-      // Display schticks with only the title (text before the colon) bolded
+      // Display schticks with only the title (text before the colon) in bold
       if (npc.schticks && npc.schticks.length > 0) {
         cardHTML += `<div class="schtickList"><h4>Schticks:</h4><ul>`;
         npc.schticks.forEach(schtick => {
@@ -214,6 +214,8 @@ function updateAttackDropdowns() {
 }
 
 // ------------------- Modal Panel for Database Items -------------------
+
+// Note: Ensure that this variable is declared only once.
 let currentNpcIdModal = null;
 const dbPanel = document.getElementById('dbPanel');
 const dbClose = document.getElementById('dbClose');
@@ -291,7 +293,7 @@ window.addEventListener('click', (e) => {
   }
 });
 
-// ------------------- Attach Listeners for Stat Adjustment Buttons -------------------
+// ------------------- Attach Listeners for PC and NPC Buttons -------------------
 function attachPcListeners() {
   document.querySelectorAll('.incAttack').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -401,7 +403,6 @@ function attachNpcListeners() {
       openDBPanel(id);
     });
   });
-  // (Other NPC stat buttons follow a similar pattern...)
   document.querySelectorAll('.incAttack').forEach(btn => {
     btn.addEventListener('click', () => {
       const id = parseInt(btn.dataset.id, 10);
@@ -416,7 +417,7 @@ function attachNpcListeners() {
       if (npc) { npc.attack--; if(npc.attack < 0) npc.attack = 0; updateNpcList(); logEvent(`Decreased ${npc.name}'s Attack to ${npc.attack}`); }
     });
   });
-  // ... (Include similar listeners for Defense, Toughness, Speed, Fortune, Wound Points, Mook Count, Remove buttons)
+  // (Repeat similar listeners for Defense, Toughness, Speed, Fortune, Wound Points, Mook Count, Remove button)
 }
 
 function updateAttackDropdowns() {
@@ -455,6 +456,7 @@ function updateAttackDropdowns() {
 }
 
 // ------------------- Modal Panel for Database Items -------------------
+// (Note: currentNpcIdModal is declared only once here)
 let currentNpcIdModal = null;
 const dbPanel = document.getElementById('dbPanel');
 const dbClose = document.getElementById('dbClose');
@@ -475,7 +477,7 @@ function openDBPanel(npcId) {
     });
     weaponListDB.appendChild(li);
   });
-  // Populate schticks list
+  // Populate schticks list (bold only the title before the colon)
   schtickListDB.innerHTML = '';
   schtickDatabase.forEach(item => {
     const li = document.createElement('li');
@@ -532,17 +534,100 @@ window.addEventListener('click', (e) => {
   }
 });
 
-// ------------------- Attach Listeners for NPC Buttons -------------------
-function attachNpcListeners() {
-  document.querySelectorAll('.addDB').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const id = parseInt(btn.dataset.id, 10);
-      openDBPanel(id);
-    });
-  });
-  // (Other NPC stat adjustment listeners are attached in attachNpcListeners above)
-  // For brevity, ensure similar event listeners exist for all NPC stat buttons.
-}
+// ------------------- Event Listeners for Add Enemy Form -------------------
+addEnemyForm.addEventListener('submit', (e) => {
+  e.preventDefault();
+  const name = enemyNameInput.value.trim();
+  let type = enemyTypeSelect.value;
+  let enemy;
+  
+  if (type === "mook") {
+    const templateKey = mookTemplateSelect.value;
+    if (!templateKey) {
+      alert("Please select a Mook Template.");
+      return;
+    }
+    const template = mookTemplates[templateKey];
+    enemy = {
+      id: getNextNpcId(),
+      name,
+      type,
+      attack: 8,
+      defense: 13,
+      toughness: 0,
+      speed: 5,
+      fortune: 0,
+      templateDamage: template.templateDamage
+    };
+    enemy.count = parseInt(mookCountInput.value, 10) || 1;
+  } else if (type === "featured" || type === "boss" || type === "uberboss") {
+    const templateKey = featuredTemplateSelect.value;
+    if (!templateKey) {
+      alert("Please select a Featured Foe Template.");
+      return;
+    }
+    const template = featuredTemplates[templateKey];
+    let baseAttack = template.attack;
+    let baseDefense = template.defense;
+    let baseToughness = template.toughness;
+    let baseSpeed = template.speed;
+    if (type === "boss") {
+      baseAttack += 3;
+      baseDefense += 2;
+      baseToughness += 2;
+      baseSpeed += 1;
+    } else if (type === "uberboss") {
+      baseAttack += 5;
+      baseDefense += 4;
+      baseToughness += 3;
+      baseSpeed += 2;
+    }
+    enemy = {
+      id: getNextNpcId(),
+      name,
+      type,
+      attack: baseAttack,
+      defense: baseDefense,
+      toughness: baseToughness,
+      speed: baseSpeed,
+      fortune: 0,
+      woundPoints: 0,
+      attackImpair: 0,
+      defenseImpair: 0,
+      weapons: template.weapons,
+      schticks: template.schticks
+    };
+  } else {
+    return;
+  }
+  
+  npcs.push(enemy);
+  updateAttackDropdowns();
+  updateNpcList();
+  addEnemyForm.reset();
+  mookCountContainer.style.display = "none";
+  mookTemplateContainer.style.display = "none";
+  featuredTemplateContainer.style.display = "none";
+  logEvent(`Added enemy: ${name} (${type})`);
+});
+
+// Show/hide additional fields based on enemy type.
+enemyTypeSelect.addEventListener('change', (e) => {
+  const selected = e.target.value;
+  if (selected === "mook") {
+    mookCountContainer.style.display = "block";
+    mookTemplateContainer.style.display = "block";
+    featuredTemplateContainer.style.display = "none";
+  } else if (selected === "featured" || selected === "boss" || selected === "uberboss") {
+    featuredTemplateContainer.style.display = "block";
+    mookCountContainer.style.display = "none";
+    mookTemplateContainer.style.display = "none";
+  } else {
+    mookCountContainer.style.display = "none";
+    mookTemplateContainer.style.display = "none";
+    featuredTemplateContainer.style.display = "none";
+  }
+});
 
 // ------------------- Attack Actions -------------------
 playerActionForm.addEventListener('submit', (e) => {
@@ -741,3 +826,10 @@ function logEvent(message) {
   li.textContent = message;
   logList.appendChild(li);
 }
+
+// ------------------- Initial Population -------------------
+function init() {
+  updatePcList();
+  updateAttackDropdowns();
+}
+init();
