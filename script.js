@@ -1,12 +1,12 @@
 /***********************************************************************
- * Combat Tracker for Feng Shui 2 with Featured Foe and Mook Templates
+ * Combat Tracker for Feng Shui 2 with Featured Foe, Mook Templates,
+ * Weapons, and Schticks (special abilities).
  *
  * - Hard-coded PCs (players) are pre-loaded.
  * - NPC foes are added via a form.
  *   • Mooks have fixed stats: Attack = 8, Defense = 13, Toughness = 0, Speed = 5.
- *     Their template selection sets a "templateDamage" bonus (used only for damage templates).
- *   • Featured foes (and Boss/Uber Boss) use templates with weapons.
- *     Weapons are attached to the foe and only display the first number (x in x/y/z).
+ *     Their template selection sets a "templateDamage" bonus (used only for damage).
+ *   • Featured foes (and Boss/Uber Boss) use templates that now include weapons and schticks.
  ***********************************************************************/
 
 // Hard-coded PCs (players)
@@ -24,7 +24,8 @@ function getNextNpcId() {
   return npcIdCounter++;
 }
 
-// Predefined Featured Foe Templates with Weapons
+// Predefined Featured Foe Templates with Weapons and Schticks.
+// (Note: For templates with no listed abilities, schticks is an empty array.)
 const featuredTemplates = {
   "enforcer": {
     attack: 13,
@@ -34,6 +35,11 @@ const featuredTemplates = {
     weapons: [
       { name: "Thompson Center Arms Contender", damage: "12/3/7" },
       { name: "CZ 75B", damage: "10/1/3" }
+    ],
+    schticks: [
+      "Headshot: After a successful attack, foe may decide that hero takes –2 penalty to skill checks until beginning of subsequent fight. Usable once per fight.",
+      "Pedal to the Metal [Driving]: When driving as the pursuer in a chase, gain +2 Driving if one or more PC drivers have fewer Chase Points.",
+      "Ram-Alama-Bam [Driving]: When driving, if foe rams a vehicle, gains +2 Frame. +4 Damage Value when foe hits a pedestrian."
     ]
   },
   "hitman": {
@@ -45,7 +51,8 @@ const featuredTemplates = {
       { name: "SVD Dragunov", damage: "13/5/3" },
       { name: "Beretta 92 Centurion", damage: "10/2/3" },
       { name: "Heckler & Koch MP5 K", damage: "10/3/1" }
-    ]
+    ],
+    schticks: []  // No schticks listed
   },
   "securityHoncho": {
     attack: 13,
@@ -56,7 +63,8 @@ const featuredTemplates = {
       { name: "Colt 1911A", damage: "10/2/4" },
       { name: "Heckler & Koch MP5 K", damage: "10/3/1" },
       { name: "Remington 870 Police", damage: "13/5/4" }
-    ]
+    ],
+    schticks: []  // No schticks listed
   },
   "sinisterBodyguard": {
     attack: 13,
@@ -65,6 +73,10 @@ const featuredTemplates = {
     speed: 6,
     weapons: [
       { name: "Browning Hi-Power", damage: "10/2/3" }
+    ],
+    schticks: [
+      "Be the Shield: Spend 1 shot to lower bodyguard’s Defense by 2, increasing ally’s Defense by 2, until bodyguard goes down.",
+      "Shibuya Slide [Driving]: When driving as the evader in a chase, gain +2 Driving if one or more PC drivers have fewer Chase Points."
     ]
   },
   "badBusinessman": {
@@ -76,7 +88,8 @@ const featuredTemplates = {
       { name: "AMT Automag V", damage: "12/3/5" },
       { name: "Beretta M12", damage: "10/5/6" },
       { name: "Benelli 90 M3", damage: "13/5/4" }
-    ]
+    ],
+    schticks: [] 
   },
   "giangHuWarrior": {
     attack: 14,
@@ -85,7 +98,8 @@ const featuredTemplates = {
     speed: 7,
     weapons: [
       { name: "Sword", damage: "10" }
-    ]
+    ],
+    schticks: [] 
   },
   "martialArtist": {
     attack: 13,
@@ -94,7 +108,8 @@ const featuredTemplates = {
     speed: 7,
     weapons: [
       { name: "Unarmed strike", damage: "10" }
-    ]
+    ],
+    schticks: [] 
   },
   "officer": {
     attack: 13,
@@ -104,7 +119,8 @@ const featuredTemplates = {
     weapons: [
       { name: "Norinco Tokarev", damage: "10/2/4" },
       { name: "AK-47", damage: "13/5/1" }
-    ]
+    ],
+    schticks: [] 
   },
   "insurgent": {
     attack: 14,
@@ -115,7 +131,8 @@ const featuredTemplates = {
       { name: "Machete/indigenous short sword", damage: "10" },
       { name: "AK-47", damage: "13/5/1" },
       { name: "Lee-Enfield bolt-action rifle", damage: "12/5/4" }
-    ]
+    ],
+    schticks: [] 
   },
   "wheelman": {
     attack: 13,
@@ -124,7 +141,8 @@ const featuredTemplates = {
     speed: 7,
     weapons: [
       { name: "Tire iron", damage: "10" }
-    ]
+    ],
+    schticks: [] 
   },
   "sorcerousVassal": {
     attack: 13,
@@ -133,7 +151,8 @@ const featuredTemplates = {
     speed: 7,
     weapons: [
       { name: "Blast", damage: "10" }
-    ]
+    ],
+    schticks: [] 
   },
   "tenThousandMan": {
     attack: 13,
@@ -143,7 +162,8 @@ const featuredTemplates = {
     weapons: [
       { name: "Intratec Tec-22", damage: "8/2/1" },
       { name: "Buzzsaw Hand", damage: "11" }
-    ]
+    ],
+    schticks: [] 
   },
   "cyberApe": {
     attack: 14,
@@ -153,7 +173,8 @@ const featuredTemplates = {
     weapons: [
       { name: "Chest-mounted machine gun", damage: "11/1/1" },
       { name: "Bite", damage: "11" }
-    ]
+    ],
+    schticks: [] 
   },
   "monster": {
     attack: 14,
@@ -162,7 +183,8 @@ const featuredTemplates = {
     speed: 7,
     weapons: [
       { name: "Claw, fang, horn, arm spike, etc.", damage: "11" }
-    ]
+    ],
+    schticks: [] 
   },
   "gladiator": {
     attack: 13,
@@ -173,7 +195,8 @@ const featuredTemplates = {
       { name: "Unarmed", damage: "9" },
       { name: "Chain", damage: "11" },
       { name: "Sword", damage: "11" }
-    ]
+    ],
+    schticks: [] 
   },
   "mutant": {
     attack: 13,
@@ -182,7 +205,8 @@ const featuredTemplates = {
     speed: 7,
     weapons: [
       { name: "Force blast/natural weapon/super-punch", damage: "11" }
-    ]
+    ],
+    schticks: [] 
   },
   "wastelander": {
     attack: 13,
@@ -192,7 +216,8 @@ const featuredTemplates = {
     weapons: [
       { name: "Unidentifiable shotgun", damage: "13/5/4" },
       { name: "Unidentifiable revolver", damage: "11/3/5" }
-    ]
+    ],
+    schticks: [] 
   },
   "sinisterScientist": {
     attack: 14,
@@ -201,7 +226,8 @@ const featuredTemplates = {
     speed: 7,
     weapons: [
       { name: "Heckler & Koch P7", damage: "10/2/4" }
-    ]
+    ],
+    schticks: [] 
   },
   "keyJiangshi": {
     attack: 15,
@@ -211,6 +237,9 @@ const featuredTemplates = {
     weapons: [
       { name: "Claw", damage: "11" },
       { name: "Bite", damage: "8" }
+    ],
+    schticks: [
+      "Contagion: After the vampire’s Bite does Wound Points, the victim makes a Defense Check. On failure, the victim takes 1 Impairment until end of fight."
     ]
   },
   "keySnakePerson": {
@@ -220,7 +249,8 @@ const featuredTemplates = {
     speed: 8,
     weapons: [
       { name: "Scimitar", damage: "10" }
-    ]
+    ],
+    schticks: [] 
   },
   "niceGuyBadAss": {
     attack: 16,
@@ -229,7 +259,8 @@ const featuredTemplates = {
     speed: 9,
     weapons: [
       { name: "Unarmed mastery", damage: "16" }
-    ]
+    ],
+    schticks: [] 
   }
 };
 
@@ -371,12 +402,20 @@ function updateNpcList() {
       cardHTML += renderStatRow("Speed", npc.speed, npc.id, "Speed");
       cardHTML += renderStatRow("Fortune", npc.fortune || 0, npc.id, "Fortune");
       cardHTML += renderStatRow("Wound Points", npc.woundPoints, npc.id, "Wound");
-      // Display weapons (only name and the first damage number)
+      // Display weapons (only name and first damage number)
       if(npc.weapons && npc.weapons.length > 0) {
         cardHTML += `<div class="weaponList"><h4>Weapons:</h4><ul>`;
         npc.weapons.forEach(weapon => {
           const damageValue = weapon.damage.split("/")[0];
           cardHTML += `<li>${weapon.name}: ${damageValue}</li>`;
+        });
+        cardHTML += `</ul></div>`;
+      }
+      // Display schticks (special abilities)
+      if(npc.schticks && npc.schticks.length > 0) {
+        cardHTML += `<div class="schtickList"><h4>Schticks:</h4><ul>`;
+        npc.schticks.forEach(schtick => {
+          cardHTML += `<li>${schtick}</li>`;
         });
         cardHTML += `</ul></div>`;
       }
@@ -740,7 +779,8 @@ addEnemyForm.addEventListener('submit', (e) => {
       woundPoints: 0,
       attackImpair: 0,
       defenseImpair: 0,
-      weapons: template.weapons  // attach weapons from template
+      weapons: template.weapons,  // attach weapons from template
+      schticks: template.schticks   // attach schticks (special abilities)
     };
   } else {
     return;
