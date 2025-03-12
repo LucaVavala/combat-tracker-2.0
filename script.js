@@ -1,4 +1,5 @@
 "use strict";
+
 /***********************************************************************
  * Combat Tracker for Feng Shui 2 with Featured Foe, Mook Templates,
  * Weapons, Schticks, and In-App Database Panel.
@@ -6,9 +7,9 @@
 
 /*=======================
   Data Definitions
-========================*/
+=======================*/
 
-// Predefined Featured Foe Templates with Weapons and Schticks
+// Featured Foe Templates with Weapons and Schticks
 const featuredTemplates = {
   "enforcer": {
     attack: 13,
@@ -247,7 +248,7 @@ const featuredTemplates = {
   }
 };
 
-// Predefined Mook Templates – fixed stats; template only supplies a damage bonus.
+// Predefined Mook Templates – these provide only a damage bonus.
 const mookTemplates = {
   "handToHand8": { templateDamage: 8 },
   "handToHand9": { templateDamage: 9 },
@@ -261,7 +262,7 @@ const mookTemplates = {
   "mixed10H2H8R": { templateDamage: 10 }
 };
 
-// Hard-coded PCs (players)
+// Hard-coded PCs (Players)
 const pcs = [
   { id: 100, name: "Ken", attack: 13, defense: 13, toughness: 6, speed: 8, fortune: 7, woundPoints: 0, isPC: true },
   { id: 101, name: "Oleg", attack: 14, backupAttack: 13, defense: 14, toughness: 7, speed: 7, fortune: 7, woundPoints: 0, isPC: true },
@@ -315,7 +316,7 @@ const exportButton = document.getElementById('exportButton');
 const importButton = document.getElementById('importButton');
 const importFileInput = document.getElementById('importFileInput');
 
-// Modal Panel Elements (declared only once)
+// Modal Panel Elements (declared once)
 let currentNpcIdModal = null;
 const dbPanel = document.getElementById('dbPanel');
 const dbClose = document.getElementById('dbClose');
@@ -413,7 +414,7 @@ function updateNpcList() {
       cardHTML += renderStatRow("Speed", npc.speed, npc.id, "Speed");
       cardHTML += renderStatRow("Fortune", npc.fortune || 0, npc.id, "Fortune");
       cardHTML += renderStatRow("Wound Points", npc.woundPoints, npc.id, "Wound");
-      // Display weapons
+      // Display weapons (only showing name and first damage number)
       if (npc.weapons && npc.weapons.length > 0) {
         cardHTML += `<div class="weaponList"><h4>Weapons:</h4><ul>`;
         npc.weapons.forEach(weapon => {
@@ -501,7 +502,7 @@ function openDBPanel(npcId) {
     });
     weaponListDB.appendChild(li);
   });
-  // Populate schticks list (bold only title before the colon)
+  // Populate schticks list (only bolding title before the colon)
   schtickListDB.innerHTML = '';
   schtickDatabase.forEach(item => {
     const li = document.createElement('li');
@@ -519,7 +520,7 @@ function openDBPanel(npcId) {
     });
     schtickListDB.appendChild(li);
   });
-  dbPanel.style.display = "block";
+  dbPanel.style.display = "flex";
 }
 
 function closeDBPanel() {
@@ -559,7 +560,7 @@ window.addEventListener('click', (e) => {
 });
 
 /*=======================
-  Event Listener Functions for PCs and NPCs
+  Event Listeners for PC and NPC Buttons
 =======================*/
 function attachPcListeners() {
   document.querySelectorAll('.incAttack').forEach(btn => {
@@ -576,7 +577,6 @@ function attachPcListeners() {
       if (pc) { pc.attack--; if (pc.attack < 0) pc.attack = 0; updatePcList(); logEvent(`Decreased ${pc.name}'s Attack to ${pc.attack}`); }
     });
   });
-  // (Repeat similar listeners for Backup Attack, Defense, Toughness, Speed, Fortune, and Wound Points)
   document.querySelectorAll('.incBackupAttack').forEach(btn => {
     btn.addEventListener('click', () => {
       const id = parseInt(btn.dataset.id, 10);
@@ -688,8 +688,117 @@ function attachNpcListeners() {
   // (Repeat similar listeners for other NPC stat adjustments as needed)
 }
 
+function updateAttackDropdowns() {
+  playerAttackerSelect.innerHTML = '';
+  pcs.forEach(pc => {
+    const option = document.createElement('option');
+    option.value = pc.id;
+    option.textContent = pc.name;
+    playerAttackerSelect.appendChild(option);
+  });
+  npcTargetSelect.innerHTML = '';
+  npcs.forEach(npc => {
+    if (npc.type !== "mook" || npc.count > 0) {
+      const option = document.createElement('option');
+      option.value = npc.id;
+      option.textContent = npc.name;
+      npcTargetSelect.appendChild(option);
+    }
+  });
+  npcAttackerSelect.innerHTML = '';
+  npcs.forEach(npc => {
+    if (npc.type !== "mook" || npc.count > 0) {
+      const option = document.createElement('option');
+      option.value = npc.id;
+      option.textContent = npc.name;
+      npcAttackerSelect.appendChild(option);
+    }
+  });
+  playerTargetSelect.innerHTML = '';
+  pcs.forEach(pc => {
+    const option = document.createElement('option');
+    option.value = pc.id;
+    option.textContent = pc.name;
+    playerTargetSelect.appendChild(option);
+  });
+}
+
 /*=======================
-  Enemy Form and Dropdowns
+  Modal Panel Functions
+=======================*/
+function openDBPanel(npcId) {
+  currentNpcIdModal = npcId;
+  // Populate weapons list
+  weaponListDB.innerHTML = '';
+  weaponDatabase.forEach(item => {
+    const li = document.createElement('li');
+    const dmg = item.damage.split("/")[0];
+    li.innerHTML = `<strong>${item.name}</strong>: ${dmg}`;
+    li.addEventListener('click', () => {
+      addWeaponToNpc(item);
+      closeDBPanel();
+    });
+    weaponListDB.appendChild(li);
+  });
+  // Populate schticks list (bold only the title before the colon)
+  schtickListDB.innerHTML = '';
+  schtickDatabase.forEach(item => {
+    const li = document.createElement('li');
+    const parts = item.split(':');
+    if (parts.length > 1) {
+      const title = parts[0].trim();
+      const description = parts.slice(1).join(':').trim();
+      li.innerHTML = `<strong>${title}</strong>: ${description}`;
+    } else {
+      li.innerHTML = `<strong>${item}</strong>`;
+    }
+    li.addEventListener('click', () => {
+      addSchtickToNpc(item);
+      closeDBPanel();
+    });
+    schtickListDB.appendChild(li);
+  });
+  dbPanel.style.display = "flex";
+}
+
+function closeDBPanel() {
+  dbPanel.style.display = "none";
+  currentNpcIdModal = null;
+}
+
+function addWeaponToNpc(weaponItem) {
+  const npc = npcs.find(npc => npc.id === currentNpcIdModal);
+  if (npc) {
+    npc.weapons = npc.weapons || [];
+    if (!npc.weapons.some(w => w.name === weaponItem.name)) {
+      npc.weapons.push(weaponItem);
+      logEvent(`Added weapon "${weaponItem.name}" to ${npc.name}`);
+    }
+    updateNpcList();
+  }
+}
+
+function addSchtickToNpc(schtickItem) {
+  const npc = npcs.find(npc => npc.id === currentNpcIdModal);
+  if (npc) {
+    npc.schticks = npc.schticks || [];
+    if (!npc.schticks.includes(schtickItem)) {
+      npc.schticks.push(schtickItem);
+      logEvent(`Added schtick to ${npc.name}: ${schtickItem}`);
+    }
+    updateNpcList();
+  }
+}
+
+dbClose.addEventListener('click', closeDBPanel);
+window.addEventListener('click', (e) => {
+  if (e.target === dbPanel) {
+    closeDBPanel();
+  }
+});
+
+/*=======================
+  Enemy Form and Dropdown Handling
 =======================*/
 enemyTypeSelect.addEventListener('change', (e) => {
   const selected = e.target.value;
