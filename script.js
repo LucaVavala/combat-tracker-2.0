@@ -1,12 +1,14 @@
 /***********************************************************************
  * Combat Tracker for Feng Shui 2 with Featured Foe, Mook Templates,
- * Weapons, and Schticks (special abilities).
+ * Weapons, Schticks, and In-App Database Panel.
  *
  * - Hard-coded PCs (players) are pre-loaded.
  * - NPC foes are added via a form.
  *   • Mooks have fixed stats: Attack = 8, Defense = 13, Toughness = 0, Speed = 5.
- *     Their template selection sets a "templateDamage" bonus (used only for damage).
- *   • Featured foes (and Boss/Uber Boss) use templates that now include weapons and schticks.
+ *     Their template selection sets a "templateDamage" bonus.
+ *   • Featured foes (and Boss/Uber Boss) use templates that include weapons and schticks.
+ * - Each Featured Foe card has a '+' button that opens a modal panel to add Weapons and Schticks
+ *   from the database (database.js).
  ***********************************************************************/
 
 // Hard-coded PCs (players)
@@ -24,8 +26,7 @@ function getNextNpcId() {
   return npcIdCounter++;
 }
 
-// Predefined Featured Foe Templates with Weapons and Schticks.
-// (Note: For templates with no listed abilities, schticks is an empty array.)
+// Predefined Featured Foe Templates with Weapons, Schticks
 const featuredTemplates = {
   "enforcer": {
     attack: 13,
@@ -52,7 +53,7 @@ const featuredTemplates = {
       { name: "Beretta 92 Centurion", damage: "10/2/3" },
       { name: "Heckler & Koch MP5 K", damage: "10/3/1" }
     ],
-    schticks: []  // No schticks listed
+    schticks: []
   },
   "securityHoncho": {
     attack: 13,
@@ -64,7 +65,7 @@ const featuredTemplates = {
       { name: "Heckler & Koch MP5 K", damage: "10/3/1" },
       { name: "Remington 870 Police", damage: "13/5/4" }
     ],
-    schticks: []  // No schticks listed
+    schticks: []
   },
   "sinisterBodyguard": {
     attack: 13,
@@ -89,7 +90,7 @@ const featuredTemplates = {
       { name: "Beretta M12", damage: "10/5/6" },
       { name: "Benelli 90 M3", damage: "13/5/4" }
     ],
-    schticks: [] 
+    schticks: []
   },
   "giangHuWarrior": {
     attack: 14,
@@ -99,7 +100,7 @@ const featuredTemplates = {
     weapons: [
       { name: "Sword", damage: "10" }
     ],
-    schticks: [] 
+    schticks: []
   },
   "martialArtist": {
     attack: 13,
@@ -109,7 +110,7 @@ const featuredTemplates = {
     weapons: [
       { name: "Unarmed strike", damage: "10" }
     ],
-    schticks: [] 
+    schticks: []
   },
   "officer": {
     attack: 13,
@@ -120,7 +121,7 @@ const featuredTemplates = {
       { name: "Norinco Tokarev", damage: "10/2/4" },
       { name: "AK-47", damage: "13/5/1" }
     ],
-    schticks: [] 
+    schticks: []
   },
   "insurgent": {
     attack: 14,
@@ -132,7 +133,7 @@ const featuredTemplates = {
       { name: "AK-47", damage: "13/5/1" },
       { name: "Lee-Enfield bolt-action rifle", damage: "12/5/4" }
     ],
-    schticks: [] 
+    schticks: []
   },
   "wheelman": {
     attack: 13,
@@ -142,7 +143,7 @@ const featuredTemplates = {
     weapons: [
       { name: "Tire iron", damage: "10" }
     ],
-    schticks: [] 
+    schticks: []
   },
   "sorcerousVassal": {
     attack: 13,
@@ -152,7 +153,7 @@ const featuredTemplates = {
     weapons: [
       { name: "Blast", damage: "10" }
     ],
-    schticks: [] 
+    schticks: []
   },
   "tenThousandMan": {
     attack: 13,
@@ -163,7 +164,7 @@ const featuredTemplates = {
       { name: "Intratec Tec-22", damage: "8/2/1" },
       { name: "Buzzsaw Hand", damage: "11" }
     ],
-    schticks: [] 
+    schticks: []
   },
   "cyberApe": {
     attack: 14,
@@ -174,7 +175,7 @@ const featuredTemplates = {
       { name: "Chest-mounted machine gun", damage: "11/1/1" },
       { name: "Bite", damage: "11" }
     ],
-    schticks: [] 
+    schticks: []
   },
   "monster": {
     attack: 14,
@@ -184,7 +185,7 @@ const featuredTemplates = {
     weapons: [
       { name: "Claw, fang, horn, arm spike, etc.", damage: "11" }
     ],
-    schticks: [] 
+    schticks: []
   },
   "gladiator": {
     attack: 13,
@@ -196,7 +197,7 @@ const featuredTemplates = {
       { name: "Chain", damage: "11" },
       { name: "Sword", damage: "11" }
     ],
-    schticks: [] 
+    schticks: []
   },
   "mutant": {
     attack: 13,
@@ -206,7 +207,7 @@ const featuredTemplates = {
     weapons: [
       { name: "Force blast/natural weapon/super-punch", damage: "11" }
     ],
-    schticks: [] 
+    schticks: []
   },
   "wastelander": {
     attack: 13,
@@ -217,7 +218,7 @@ const featuredTemplates = {
       { name: "Unidentifiable shotgun", damage: "13/5/4" },
       { name: "Unidentifiable revolver", damage: "11/3/5" }
     ],
-    schticks: [] 
+    schticks: []
   },
   "sinisterScientist": {
     attack: 14,
@@ -227,7 +228,7 @@ const featuredTemplates = {
     weapons: [
       { name: "Heckler & Koch P7", damage: "10/2/4" }
     ],
-    schticks: [] 
+    schticks: []
   },
   "keyJiangshi": {
     attack: 15,
@@ -239,7 +240,7 @@ const featuredTemplates = {
       { name: "Bite", damage: "8" }
     ],
     schticks: [
-      "Contagion: After the vampire’s Bite does Wound Points, the victim makes a Defense Check. On failure, the victim takes 1 Impairment until end of fight."
+      "Contagion: After a successful Bite, the victim makes a Defense Check. On failure, the victim takes 1 Impairment until the end of the fight."
     ]
   },
   "keySnakePerson": {
@@ -250,7 +251,7 @@ const featuredTemplates = {
     weapons: [
       { name: "Scimitar", damage: "10" }
     ],
-    schticks: [] 
+    schticks: []
   },
   "niceGuyBadAss": {
     attack: 16,
@@ -260,7 +261,7 @@ const featuredTemplates = {
     weapons: [
       { name: "Unarmed mastery", damage: "16" }
     ],
-    schticks: [] 
+    schticks: []
   }
 };
 
@@ -419,6 +420,8 @@ function updateNpcList() {
         });
         cardHTML += `</ul></div>`;
       }
+      // Add a '+' button to bring up the database panel
+      cardHTML += `<button data-id="${npc.id}" class="addDB">+</button>`;
     }
     cardHTML += `<button data-id="${npc.id}" class="removeEnemy removeBtn">Remove</button>`;
     const li = document.createElement('li');
@@ -463,6 +466,77 @@ function updateAttackDropdowns() {
     playerTargetSelect.appendChild(option);
   });
 }
+
+// ------------------- Modal Panel for Database Items -------------------
+let currentNpcId = null;
+const dbPanel = document.getElementById('dbPanel');
+const dbClose = document.getElementById('dbClose');
+const weaponListDB = document.getElementById('weaponListDB');
+const schtickListDB = document.getElementById('schtickListDB');
+
+function openDBPanel(npcId) {
+  currentNpcId = npcId;
+  // Populate weapons list
+  weaponListDB.innerHTML = '';
+  weaponDatabase.forEach(item => {
+    const li = document.createElement('li');
+    const dmg = item.damage.split("/")[0];
+    li.textContent = `${item.name}: ${dmg}`;
+    li.addEventListener('click', () => {
+      addWeaponToNpc(item);
+      closeDBPanel();
+    });
+    weaponListDB.appendChild(li);
+  });
+  // Populate schticks list
+  schtickListDB.innerHTML = '';
+  schtickDatabase.forEach(item => {
+    const li = document.createElement('li');
+    li.textContent = item;
+    li.addEventListener('click', () => {
+      addSchtickToNpc(item);
+      closeDBPanel();
+    });
+    schtickListDB.appendChild(li);
+  });
+  dbPanel.style.display = "block";
+}
+
+function closeDBPanel() {
+  dbPanel.style.display = "none";
+  currentNpcId = null;
+}
+
+function addWeaponToNpc(weaponItem) {
+  const npc = npcs.find(npc => npc.id === currentNpcId);
+  if (npc) {
+    npc.weapons = npc.weapons || [];
+    if (!npc.weapons.some(w => w.name === weaponItem.name)) {
+      npc.weapons.push(weaponItem);
+      logEvent(`Added weapon "${weaponItem.name}" to ${npc.name}`);
+    }
+    updateNpcList();
+  }
+}
+
+function addSchtickToNpc(schtickItem) {
+  const npc = npcs.find(npc => npc.id === currentNpcId);
+  if (npc) {
+    npc.schticks = npc.schticks || [];
+    if (!npc.schticks.includes(schtickItem)) {
+      npc.schticks.push(schtickItem);
+      logEvent(`Added schtick to ${npc.name}: ${schtickItem}`);
+    }
+    updateNpcList();
+  }
+}
+
+dbClose.addEventListener('click', closeDBPanel);
+window.addEventListener('click', (e) => {
+  if (e.target === dbPanel) {
+    closeDBPanel();
+  }
+});
 
 // ------------------- Attach Listeners for Stat Adjustment Buttons -------------------
 function attachPcListeners() {
@@ -567,6 +641,13 @@ function attachPcListeners() {
 }
 
 function attachNpcListeners() {
+  // Attach listener for '+' button to open database panel.
+  document.querySelectorAll('.addDB').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = parseInt(btn.dataset.id, 10);
+      openDBPanel(id);
+    });
+  });
   document.querySelectorAll('.incAttack').forEach(btn => {
     btn.addEventListener('click', () => {
       const id = parseInt(btn.dataset.id, 10);
@@ -779,8 +860,8 @@ addEnemyForm.addEventListener('submit', (e) => {
       woundPoints: 0,
       attackImpair: 0,
       defenseImpair: 0,
-      weapons: template.weapons,  // attach weapons from template
-      schticks: template.schticks   // attach schticks (special abilities)
+      weapons: template.weapons,   // attach weapons from template
+      schticks: template.schticks    // attach schticks from template
     };
   } else {
     return;
@@ -901,7 +982,7 @@ npcRollDiceButton.addEventListener('click', () => {
   const negTotal = rollExplodingDie(negInitial);
   const diceOutcome = posTotal - negTotal;
   
-  // For mooks, use only their attack value (do not add templateDamage)
+  // For mooks, use only their attack value.
   let baseAttack = attacker.attack;
   
   const finalCheck = baseAttack + diceOutcome + modifier;
