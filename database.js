@@ -1,8 +1,6 @@
-// database.js
+"use strict";
 
-//
-// 1) Full weaponDatabase with your updated entries
-//
+// Weapons Database – each entry has a name and a damage string (we only use the first number)
 const weaponDatabase = [
   { name: "Bow and Arrow", damage: "7/5/–" },
   { name: "Black powder pistol", damage: "7/3/6" },
@@ -22,9 +20,10 @@ const weaponDatabase = [
   { name: "CZ 75B", damage: "10/1/3" },
   { name: "Desert Eagle .357 Magnum", damage: "11/3/3" },
   { name: "Desert Eagle .50AE", damage: "12/3/4" },
-  { name: "E.T. \"Series one Laseraim\"", damage: "11/3/3" },
+  { name: "E.T. 'Series one Laseraim'", damage: "11/3/3" },
   { name: "Glock 17", damage: "10/1/3" },
-  { name: "Glock 18", damage: "10/1/3; 10/2/1" },
+  { name: "Glock 18", damage: "10/1/3" },
+  { name: "Glock 18 Variant", damage: "10/2/1" },
   { name: "Grendel p-12", damage: "9/1/3" },
   { name: "Grendel p-30", damage: "8/1/1" },
   { name: "Heckler & Koch p7", damage: "10/2/4" },
@@ -56,7 +55,7 @@ const weaponDatabase = [
   { name: "Beretta M12", damage: "10/5/6" },
   { name: "FN p90", damage: "13/5/6" },
   { name: "Colt M6351", damage: "10/5/1" },
-  { name: "Hechler & Koch Mp5", damage: "10/5/1" },
+  { name: "Heckler & Koch Mp5", damage: "10/5/1" },
   { name: "Heckler & Koch Mp5 K", damage: "10/3/1" },
   { name: "Heckler & Koch Mp5 police", damage: "11/5/1" },
   { name: "Heckler & Koch Mp7", damage: "12/5/1" },
@@ -89,9 +88,7 @@ const weaponDatabase = [
   { name: "Winchester Model 70", damage: "12/5/5" }
 ];
 
-//
-// 2) New, comprehensive schtickDatabase
-//
+// Schticks Database – each entry is a string; the title is the text before the first colon.
 const schtickDatabase = [
   "Ablative Lackey: If at least one mook is up, as an interrupt after the foe takes Wound Points, the foe takes 0 Wound Points and 1 mook goes down.",
   "Anti-Mystical: +1 Defense vs. Creature Powers and Sorcery attacks.",
@@ -101,7 +98,7 @@ const schtickDatabase = [
   "Bone Fissure (Sorcerer, Supernatural Creature): Spend 1 shot; if the foe is still active at the start of the next keyframe, target hero takes 7 Wound Points at the start of their next fight.",
   "Broken Trigram (Sorcerer): Spend 1 shot; if the foe is still active at the start of the next keyframe, target hero suffers a financial setback in a later scene.",
   "Clear Aim: +3 Attack vs. characters whose current Defense exceeds their base Defense.",
-  "Contagion (Supernatural Creature): On a successful Bite attack, target hero makes a Defense Check. On failure, they take 1 Impairment until end of fight and require a storyline cure.",
+  "Contagion (Supernatural Creature): On a successful Bite attack, target hero makes a Defense Check. On failure, they take 1 Impairment until the end of the fight and require a storyline cure.",
   "Copy Cat: After missing a Dodging hero, the foe gains +2 Defense until next keyframe.",
   "Cursed Weapon (Sorcerer, Supernatural Creature): When a hero misses a weapon attack, subsequent attacks with that weapon take a –2 penalty and cost +1 shot.",
   "Cyclical Flow (Martial Artist): Damage equals current shot number +5.",
@@ -167,18 +164,17 @@ const schtickDatabase = [
   "Taskmaster (Boss): Add +3 to Featured Foe Initiative while the Boss is up.",
   "Tongue Grab (Supernatural Creature, Mutant): Spend 1 shot; the foe draws target hero from ranged to close combat distance.",
   "Vehicle Hit: Spend 3 shots and make an Attack against a driver’s Driving AV. The Driver’s vehicle takes Outcome +11 Chase Points, counting as a ram or sideswipe.",
-  
   // DRIVING SCHTICKS
-  "Armor Plated (Driving): +2 to the Frame of the foe’s starting vehicle.",
-  "Rehearsed Getaway (Driving): –3 to Chase Points dealt to the foe’s vehicle when a hero narrows the gap.",
-  "Shibuya Slide (Driving): When driving as the evader in a chase, gain +2 Driving if one or more hero drivers have fewer Chase Points.",
-  "Pedal to the Metal (Driving): When driving as the pursuer in a chase, gain +2 Driving if one or more hero drivers have fewer Chase Points.",
-  "Wrench the Wheel (Driving): –3 to Chase Points dealt to the foe’s vehicle in any ram or sideswipe.",
-  "Braced for Impact (Driving): When the foe’s vehicle crashes, all occupants gain +4 Toughness against crash damage.",
-  "Counterslam (Driving): If the foe’s vehicle’s higher Frame gives an opposing vehicle a Bump value, that value increases by 3.",
-  "Dazed and Contused (Driving): Until the next keyframe, enemies exiting a vehicle the foe rammed or sideswiped take 1 point of Impairment and add 1 to all shot costs.",
-  "High Gear (Driving): If the foe’s Initiative is lower than that of the first hero Driver to act, the foe’s Initiative equals that hero’s Initiative –1.",
-  "Ram-Alama-Bam (Driving): When driving, if the foe rams a vehicle, gain +2 Frame. Also, +4 Damage Value when the foe hits a pedestrian.",
-  "Wicked Ride (Driving): +2 to the Handling of the foe’s starting vehicle."
+  "Armor Plated: +2 to the Frame of the foe’s starting vehicle.",
+  "Rehearsed Getaway: –3 to Chase Points dealt to the foe’s vehicle when a hero narrows the gap.",
+  "Shibuya Slide: When driving as the evader in a chase, gain +2 Driving if one or more hero drivers have fewer Chase Points.",
+  "Pedal to the Metal: When driving as the pursuer in a chase, gain +2 Driving if one or more hero drivers have fewer Chase Points.",
+  "Wrench the Wheel: –3 to Chase Points dealt to the foe’s vehicle in any ram or sideswipe.",
+  "Braced for Impact: When the foe’s vehicle crashes, all occupants gain +4 Toughness against crash damage.",
+  "Counterslam: If the foe’s vehicle’s higher Frame gives an opposing vehicle a Bump value, that value increases by 3.",
+  "Dazed and Contused: Until the next keyframe, enemies exiting a vehicle the foe rammed or sideswiped take 1 point of Impairment and add 1 to all shot costs.",
+  "High Gear: If the foe’s Initiative is lower than that of the first hero Driver to act, the foe’s Initiative equals that hero’s Initiative –1.",
+  "Ram-Alama-Bam: When driving, if the foe rams a vehicle, gain +2 Frame. Also, +4 Damage Value when the foe hits a pedestrian.",
+  "Wicked Ride: +2 to the Handling of the foe’s starting vehicle."
 ];
 
