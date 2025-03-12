@@ -94,20 +94,16 @@
     </section>
 
     <!-- Modal Panel for In-App Database -->
-    <div id="dbPanel" class="modal">
-      <div class="modal-content">
-        <span id="dbClose" class="close">&times;</span>
-        <h3>Select Database Item</h3>
-        <div class="db-section">
-          <h4>Weapons</h4>
-          <ul id="weaponListDB"></ul>
-        </div>
-        <div class="db-section">
-          <h4>Schticks</h4>
-          <ul id="schtickListDB"></ul>
-        </div>
-      </div>
-    </div>
+   <div id="dbPanel">
+  <div class="modal-content">
+    <button id="dbClose">Close</button>
+    <h3>Select Weapon</h3>
+    <ul id="weaponListDB"></ul>
+    <h3>Select Schtick</h3>
+    <ul id="schtickListDB"></ul>
+  </div>
+</div>
+
   </main>
   <script src="database.js"></script>
   <script src="script.js"></script>
