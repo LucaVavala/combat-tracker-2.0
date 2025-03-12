@@ -468,7 +468,6 @@ function updateAttackDropdowns() {
 
 // ------------------- Modal Panel for Database Items -------------------
 // Declare modal variables only once.
-let currentNpcIdModal = null;
 const dbPanel = document.getElementById('dbPanel');
 const dbClose = document.getElementById('dbClose');
 const weaponListDB = document.getElementById('weaponListDB');
