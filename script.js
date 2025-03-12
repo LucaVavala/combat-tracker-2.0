@@ -1,13 +1,12 @@
 "use strict";
-
 /***********************************************************************
  * Combat Tracker for Feng Shui 2 with Featured Foe, Mook Templates,
  * Weapons, Schticks, and In-App Database Panel.
  ***********************************************************************/
 
-// =======================
-// Data Definitions
-// =======================
+/*=======================
+  Data Definitions
+========================*/
 
 // Predefined Featured Foe Templates with Weapons and Schticks
 const featuredTemplates = {
@@ -277,9 +276,9 @@ function getNextNpcId() {
   return npcIdCounter++;
 }
 
-// =======================
-// DOM Elements
-// =======================
+/*=======================
+  DOM Elements
+=======================*/
 const pcList = document.getElementById('pcList');
 const npcList = document.getElementById('npcList');
 
@@ -323,9 +322,9 @@ const dbClose = document.getElementById('dbClose');
 const weaponListDB = document.getElementById('weaponListDB');
 const schtickListDB = document.getElementById('schtickListDB');
 
-// =======================
-// Utility Functions
-// =======================
+/*=======================
+  Utility Functions
+=======================*/
 function renderStatRow(label, statValue, id, statKey) {
   return `
     <div class="statRow">
@@ -366,142 +365,9 @@ function populateMookTemplateDropdown() {
 }
 populateMookTemplateDropdown();
 
-// =======================
-// Event Listener Functions for PCs and NPCs
-// =======================
-
-function attachPcListeners() {
-  document.querySelectorAll('.incAttack').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const id = parseInt(btn.dataset.id, 10);
-      const pc = pcs.find(pc => pc.id === id);
-      if (pc) { pc.attack++; updatePcList(); logEvent(`Increased ${pc.name}'s Attack to ${pc.attack}`); }
-    });
-  });
-  document.querySelectorAll('.decAttack').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const id = parseInt(btn.dataset.id, 10);
-      const pc = pcs.find(pc => pc.id === id);
-      if (pc) { pc.attack--; if(pc.attack < 0) pc.attack = 0; updatePcList(); logEvent(`Decreased ${pc.name}'s Attack to ${pc.attack}`); }
-    });
-  });
-  // (Repeat similar listeners for Backup Attack, Defense, Toughness, Speed, Fortune, and Wound Points)
-  document.querySelectorAll('.incBackupAttack').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const id = parseInt(btn.dataset.id, 10);
-      const pc = pcs.find(pc => pc.id === id);
-      if (pc && pc.backupAttack !== undefined) { pc.backupAttack++; updatePcList(); logEvent(`Increased ${pc.name}'s Backup Attack to ${pc.backupAttack}`); }
-    });
-  });
-  document.querySelectorAll('.decBackupAttack').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const id = parseInt(btn.dataset.id, 10);
-      const pc = pcs.find(pc => pc.id === id);
-      if (pc && pc.backupAttack !== undefined) { pc.backupAttack--; if(pc.backupAttack < 0) pc.backupAttack = 0; updatePcList(); logEvent(`Decreased ${pc.name}'s Backup Attack to ${pc.backupAttack}`); }
-    });
-  });
-  document.querySelectorAll('.incDefense').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const id = parseInt(btn.dataset.id, 10);
-      const pc = pcs.find(pc => pc.id === id);
-      if (pc) { pc.defense++; updatePcList(); logEvent(`Increased ${pc.name}'s Defense to ${pc.defense}`); }
-    });
-  });
-  document.querySelectorAll('.decDefense').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const id = parseInt(btn.dataset.id, 10);
-      const pc = pcs.find(pc => pc.id === id);
-      if (pc) { pc.defense--; if(pc.defense < 0) pc.defense = 0; updatePcList(); logEvent(`Decreased ${pc.name}'s Defense to ${pc.defense}`); }
-    });
-  });
-  document.querySelectorAll('.incToughness').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const id = parseInt(btn.dataset.id, 10);
-      const pc = pcs.find(pc => pc.id === id);
-      if (pc) { pc.toughness++; updatePcList(); logEvent(`Increased ${pc.name}'s Toughness to ${pc.toughness}`); }
-    });
-  });
-  document.querySelectorAll('.decToughness').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const id = parseInt(btn.dataset.id, 10);
-      const pc = pcs.find(pc => pc.id === id);
-      if (pc) { pc.toughness--; if(pc.toughness < 0) pc.toughness = 0; updatePcList(); logEvent(`Decreased ${pc.name}'s Toughness to ${pc.toughness}`); }
-    });
-  });
-  document.querySelectorAll('.incSpeed').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const id = parseInt(btn.dataset.id, 10);
-      const pc = pcs.find(pc => pc.id === id);
-      if (pc) { pc.speed++; updatePcList(); logEvent(`Increased ${pc.name}'s Speed to ${pc.speed}`); }
-    });
-  });
-  document.querySelectorAll('.decSpeed').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const id = parseInt(btn.dataset.id, 10);
-      const pc = pcs.find(pc => pc.id === id);
-      if (pc) { pc.speed--; if(pc.speed < 0) pc.speed = 0; updatePcList(); logEvent(`Decreased ${pc.name}'s Speed to ${pc.speed}`); }
-    });
-  });
-  document.querySelectorAll('.incFortune').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const id = parseInt(btn.dataset.id, 10);
-      const pc = pcs.find(pc => pc.id === id);
-      if (pc) { pc.fortune++; updatePcList(); logEvent(`Increased ${pc.name}'s Fortune to ${pc.fortune}`); }
-    });
-  });
-  document.querySelectorAll('.decFortune').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const id = parseInt(btn.dataset.id, 10);
-      const pc = pcs.find(pc => pc.id === id);
-      if (pc) { pc.fortune--; if(pc.fortune < 0) pc.fortune = 0; updatePcList(); logEvent(`Decreased ${pc.name}'s Fortune to ${pc.fortune}`); }
-    });
-  });
-  document.querySelectorAll('.incWound').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const id = parseInt(btn.dataset.id, 10);
-      const pc = pcs.find(pc => pc.id === id);
-      if (pc) { pc.woundPoints++; updatePcList(); logEvent(`Increased ${pc.name}'s Wound Points to ${pc.woundPoints}`); }
-    });
-  });
-  document.querySelectorAll('.decWound').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const id = parseInt(btn.dataset.id, 10);
-      const pc = pcs.find(pc => pc.id === id);
-      if (pc) { pc.woundPoints--; if(pc.woundPoints < 0) pc.woundPoints = 0; updatePcList(); logEvent(`Decreased ${pc.name}'s Wound Points to ${pc.woundPoints}`); }
-    });
-  });
-}
-
-function attachNpcListeners() {
-  // '+' button for database panel
-  document.querySelectorAll('.addDB').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const id = parseInt(btn.dataset.id, 10);
-      openDBPanel(id);
-    });
-  });
-  // (Add similar listeners for NPC stat adjustments)
-  document.querySelectorAll('.incAttack').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const id = parseInt(btn.dataset.id, 10);
-      const npc = npcs.find(npc => npc.id === id);
-      if (npc) { npc.attack++; updateNpcList(); logEvent(`Increased ${npc.name}'s Attack to ${npc.attack}`); }
-    });
-  });
-  document.querySelectorAll('.decAttack').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const id = parseInt(btn.dataset.id, 10);
-      const npc = npcs.find(npc => npc.id === id);
-      if (npc) { npc.attack--; if(npc.attack < 0) npc.attack = 0; updateNpcList(); logEvent(`Decreased ${npc.name}'s Attack to ${npc.attack}`); }
-    });
-  });
-  // (You should include similar listeners for Defense, Toughness, Speed, Fortune, Wound Points, Mook Count, and Remove buttons)
-}
-
-// =======================
-// Display Update Functions
-// =======================
-
+/*=======================
+  Display Update Functions
+=======================*/
 function updatePcList() {
   pcList.innerHTML = '';
   pcs.forEach(pc => {
@@ -547,7 +413,7 @@ function updateNpcList() {
       cardHTML += renderStatRow("Speed", npc.speed, npc.id, "Speed");
       cardHTML += renderStatRow("Fortune", npc.fortune || 0, npc.id, "Fortune");
       cardHTML += renderStatRow("Wound Points", npc.woundPoints, npc.id, "Wound");
-      // Display weapons (name and first damage number)
+      // Display weapons
       if (npc.weapons && npc.weapons.length > 0) {
         cardHTML += `<div class="weaponList"><h4>Weapons:</h4><ul>`;
         npc.weapons.forEach(weapon => {
@@ -556,7 +422,7 @@ function updateNpcList() {
         });
         cardHTML += `</ul></div>`;
       }
-      // Display schticks with only the title (before the colon) in bold
+      // Display schticks (only bolding the title before the colon)
       if (npc.schticks && npc.schticks.length > 0) {
         cardHTML += `<div class="schtickList"><h4>Schticks:</h4><ul>`;
         npc.schticks.forEach(schtick => {
@@ -571,7 +437,7 @@ function updateNpcList() {
         });
         cardHTML += `</ul></div>`;
       }
-      // '+' button for database panel
+      // Add '+' button for database panel
       cardHTML += `<button data-id="${npc.id}" class="addDB">+</button>`;
     }
     cardHTML += `<button data-id="${npc.id}" class="removeEnemy removeBtn">Remove</button>`;
@@ -618,9 +484,9 @@ function updateAttackDropdowns() {
   });
 }
 
-// =======================
-// Modal Panel for Database Items
-// =======================
+/*=======================
+  Modal Panel Functions
+=======================*/
 function openDBPanel(npcId) {
   currentNpcIdModal = npcId;
   // Populate weapons list
@@ -635,7 +501,7 @@ function openDBPanel(npcId) {
     });
     weaponListDB.appendChild(li);
   });
-  // Populate schticks list (bold only the title before the colon)
+  // Populate schticks list (bold only title before the colon)
   schtickListDB.innerHTML = '';
   schtickDatabase.forEach(item => {
     const li = document.createElement('li');
@@ -692,10 +558,235 @@ window.addEventListener('click', (e) => {
   }
 });
 
-// =======================
-// Attack Actions
-// =======================
+/*=======================
+  Event Listener Functions for PCs and NPCs
+=======================*/
+function attachPcListeners() {
+  document.querySelectorAll('.incAttack').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = parseInt(btn.dataset.id, 10);
+      const pc = pcs.find(pc => pc.id === id);
+      if (pc) { pc.attack++; updatePcList(); logEvent(`Increased ${pc.name}'s Attack to ${pc.attack}`); }
+    });
+  });
+  document.querySelectorAll('.decAttack').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = parseInt(btn.dataset.id, 10);
+      const pc = pcs.find(pc => pc.id === id);
+      if (pc) { pc.attack--; if (pc.attack < 0) pc.attack = 0; updatePcList(); logEvent(`Decreased ${pc.name}'s Attack to ${pc.attack}`); }
+    });
+  });
+  // (Repeat similar listeners for Backup Attack, Defense, Toughness, Speed, Fortune, and Wound Points)
+  document.querySelectorAll('.incBackupAttack').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = parseInt(btn.dataset.id, 10);
+      const pc = pcs.find(pc => pc.id === id);
+      if (pc && pc.backupAttack !== undefined) { pc.backupAttack++; updatePcList(); logEvent(`Increased ${pc.name}'s Backup Attack to ${pc.backupAttack}`); }
+    });
+  });
+  document.querySelectorAll('.decBackupAttack').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = parseInt(btn.dataset.id, 10);
+      const pc = pcs.find(pc => pc.id === id);
+      if (pc && pc.backupAttack !== undefined) { pc.backupAttack--; if (pc.backupAttack < 0) pc.backupAttack = 0; updatePcList(); logEvent(`Decreased ${pc.name}'s Backup Attack to ${pc.backupAttack}`); }
+    });
+  });
+  document.querySelectorAll('.incDefense').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = parseInt(btn.dataset.id, 10);
+      const pc = pcs.find(pc => pc.id === id);
+      if (pc) { pc.defense++; updatePcList(); logEvent(`Increased ${pc.name}'s Defense to ${pc.defense}`); }
+    });
+  });
+  document.querySelectorAll('.decDefense').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = parseInt(btn.dataset.id, 10);
+      const pc = pcs.find(pc => pc.id === id);
+      if (pc) { pc.defense--; if (pc.defense < 0) pc.defense = 0; updatePcList(); logEvent(`Decreased ${pc.name}'s Defense to ${pc.defense}`); }
+    });
+  });
+  document.querySelectorAll('.incToughness').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = parseInt(btn.dataset.id, 10);
+      const pc = pcs.find(pc => pc.id === id);
+      if (pc) { pc.toughness++; updatePcList(); logEvent(`Increased ${pc.name}'s Toughness to ${pc.toughness}`); }
+    });
+  });
+  document.querySelectorAll('.decToughness').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = parseInt(btn.dataset.id, 10);
+      const pc = pcs.find(pc => pc.id === id);
+      if (pc) { pc.toughness--; if (pc.toughness < 0) pc.toughness = 0; updatePcList(); logEvent(`Decreased ${pc.name}'s Toughness to ${pc.toughness}`); }
+    });
+  });
+  document.querySelectorAll('.incSpeed').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = parseInt(btn.dataset.id, 10);
+      const pc = pcs.find(pc => pc.id === id);
+      if (pc) { pc.speed++; updatePcList(); logEvent(`Increased ${pc.name}'s Speed to ${pc.speed}`); }
+    });
+  });
+  document.querySelectorAll('.decSpeed').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = parseInt(btn.dataset.id, 10);
+      const pc = pcs.find(pc => pc.id === id);
+      if (pc) { pc.speed--; if (pc.speed < 0) pc.speed = 0; updatePcList(); logEvent(`Decreased ${pc.name}'s Speed to ${pc.speed}`); }
+    });
+  });
+  document.querySelectorAll('.incFortune').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = parseInt(btn.dataset.id, 10);
+      const pc = pcs.find(pc => pc.id === id);
+      if (pc) { pc.fortune++; updatePcList(); logEvent(`Increased ${pc.name}'s Fortune to ${pc.fortune}`); }
+    });
+  });
+  document.querySelectorAll('.decFortune').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = parseInt(btn.dataset.id, 10);
+      const pc = pcs.find(pc => pc.id === id);
+      if (pc) { pc.fortune--; if (pc.fortune < 0) pc.fortune = 0; updatePcList(); logEvent(`Decreased ${pc.name}'s Fortune to ${pc.fortune}`); }
+    });
+  });
+  document.querySelectorAll('.incWound').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = parseInt(btn.dataset.id, 10);
+      const pc = pcs.find(pc => pc.id === id);
+      if (pc) { pc.woundPoints++; updatePcList(); logEvent(`Increased ${pc.name}'s Wound Points to ${pc.woundPoints}`); }
+    });
+  });
+  document.querySelectorAll('.decWound').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = parseInt(btn.dataset.id, 10);
+      const pc = pcs.find(pc => pc.id === id);
+      if (pc) { pc.woundPoints--; if (pc.woundPoints < 0) pc.woundPoints = 0; updatePcList(); logEvent(`Decreased ${pc.name}'s Wound Points to ${pc.woundPoints}`); }
+    });
+  });
+}
 
+function attachNpcListeners() {
+  // '+' button for database panel
+  document.querySelectorAll('.addDB').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = parseInt(btn.dataset.id, 10);
+      openDBPanel(id);
+    });
+  });
+  document.querySelectorAll('.incAttack').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = parseInt(btn.dataset.id, 10);
+      const npc = npcs.find(npc => npc.id === id);
+      if (npc) { npc.attack++; updateNpcList(); logEvent(`Increased ${npc.name}'s Attack to ${npc.attack}`); }
+    });
+  });
+  document.querySelectorAll('.decAttack').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = parseInt(btn.dataset.id, 10);
+      const npc = npcs.find(npc => npc.id === id);
+      if (npc) { npc.attack--; if (npc.attack < 0) npc.attack = 0; updateNpcList(); logEvent(`Decreased ${npc.name}'s Attack to ${npc.attack}`); }
+    });
+  });
+  // (Repeat similar listeners for other NPC stat adjustments as needed)
+}
+
+/*=======================
+  Enemy Form and Dropdowns
+=======================*/
+enemyTypeSelect.addEventListener('change', (e) => {
+  const selected = e.target.value;
+  if (selected === "mook") {
+    mookCountContainer.style.display = "block";
+    mookTemplateContainer.style.display = "block";
+    featuredTemplateContainer.style.display = "none";
+  } else if (selected === "featured" || selected === "boss" || selected === "uberboss") {
+    featuredTemplateContainer.style.display = "block";
+    mookCountContainer.style.display = "none";
+    mookTemplateContainer.style.display = "none";
+  } else {
+    mookCountContainer.style.display = "none";
+    mookTemplateContainer.style.display = "none";
+    featuredTemplateContainer.style.display = "none";
+  }
+});
+
+addEnemyForm.addEventListener('submit', (e) => {
+  e.preventDefault();
+  const name = enemyNameInput.value.trim();
+  let type = enemyTypeSelect.value;
+  let enemy;
+  
+  if (type === "mook") {
+    const templateKey = mookTemplateSelect.value;
+    if (!templateKey) {
+      alert("Please select a Mook Template.");
+      return;
+    }
+    const template = mookTemplates[templateKey];
+    enemy = {
+      id: getNextNpcId(),
+      name,
+      type,
+      attack: 8,
+      defense: 13,
+      toughness: 0,
+      speed: 5,
+      fortune: 0,
+      templateDamage: template.templateDamage
+    };
+    enemy.count = parseInt(mookCountInput.value, 10) || 1;
+  } else if (type === "featured" || type === "boss" || type === "uberboss") {
+    const templateKey = featuredTemplateSelect.value;
+    if (!templateKey) {
+      alert("Please select a Featured Foe Template.");
+      return;
+    }
+    const template = featuredTemplates[templateKey];
+    let baseAttack = template.attack;
+    let baseDefense = template.defense;
+    let baseToughness = template.toughness;
+    let baseSpeed = template.speed;
+    if (type === "boss") {
+      baseAttack += 3;
+      baseDefense += 2;
+      baseToughness += 2;
+      baseSpeed += 1;
+    } else if (type === "uberboss") {
+      baseAttack += 5;
+      baseDefense += 4;
+      baseToughness += 3;
+      baseSpeed += 2;
+    }
+    enemy = {
+      id: getNextNpcId(),
+      name,
+      type,
+      attack: baseAttack,
+      defense: baseDefense,
+      toughness: baseToughness,
+      speed: baseSpeed,
+      fortune: 0,
+      woundPoints: 0,
+      attackImpair: 0,
+      defenseImpair: 0,
+      weapons: template.weapons,
+      schticks: template.schticks
+    };
+  } else {
+    return;
+  }
+  
+  npcs.push(enemy);
+  updateAttackDropdowns();
+  updateNpcList();
+  addEnemyForm.reset();
+  mookCountContainer.style.display = "none";
+  mookTemplateContainer.style.display = "none";
+  featuredTemplateContainer.style.display = "none";
+  logEvent(`Added enemy: ${name} (${type})`);
+});
+
+/*=======================
+  Attack Actions
+=======================*/
 playerActionForm.addEventListener('submit', (e) => {
   e.preventDefault();
   const attackerId = parseInt(playerAttackerSelect.value, 10);
@@ -781,7 +872,6 @@ npcRollDiceButton.addEventListener('click', () => {
   const diceOutcome = posTotal - negTotal;
   
   let baseAttack = attacker.attack;
-  
   const finalCheck = baseAttack + diceOutcome + modifier;
   npcRollResultDiv.dataset.finalCheck = finalCheck;
   
@@ -838,9 +928,9 @@ npcActionForm.addEventListener('submit', (e) => {
   updateAttackDropdowns();
 });
 
-// =======================
-// Dice Roller Functions
-// =======================
+/*=======================
+  Dice Roller Functions
+=======================*/
 function rollDie() {
   return Math.floor(Math.random() * 6) + 1;
 }
@@ -853,9 +943,9 @@ function rollExplodingDie(initial) {
   return total;
 }
 
-// =======================
-// Data Export / Import
-// =======================
+/*=======================
+  Data Export / Import
+=======================*/
 exportButton.addEventListener('click', () => {
   const data = { pcs, npcs };
   const dataStr = JSON.stringify(data);
@@ -892,18 +982,53 @@ importFileInput.addEventListener('change', (e) => {
   reader.readAsText(file);
 });
 
-// =======================
-// Event Log Helper
-// =======================
+/*=======================
+  Event Log Helper
+=======================*/
 function logEvent(message) {
   const li = document.createElement('li');
   li.textContent = message;
   logList.appendChild(li);
 }
 
-// =======================
-// Initial Population
-// =======================
+/*=======================
+  Initial Population and Dropdown Updates
+=======================*/
+function updateAttackDropdowns() {
+  playerAttackerSelect.innerHTML = '';
+  pcs.forEach(pc => {
+    const option = document.createElement('option');
+    option.value = pc.id;
+    option.textContent = pc.name;
+    playerAttackerSelect.appendChild(option);
+  });
+  npcTargetSelect.innerHTML = '';
+  npcs.forEach(npc => {
+    if (npc.type !== "mook" || npc.count > 0) {
+      const option = document.createElement('option');
+      option.value = npc.id;
+      option.textContent = npc.name;
+      npcTargetSelect.appendChild(option);
+    }
+  });
+  npcAttackerSelect.innerHTML = '';
+  npcs.forEach(npc => {
+    if (npc.type !== "mook" || npc.count > 0) {
+      const option = document.createElement('option');
+      option.value = npc.id;
+      option.textContent = npc.name;
+      npcAttackerSelect.appendChild(option);
+    }
+  });
+  playerTargetSelect.innerHTML = '';
+  pcs.forEach(pc => {
+    const option = document.createElement('option');
+    option.value = pc.id;
+    option.textContent = pc.name;
+    playerTargetSelect.appendChild(option);
+  });
+}
+
 function init() {
   updatePcList();
   updateAttackDropdowns();
