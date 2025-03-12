@@ -143,3 +143,12 @@ ul {
   padding: 0.5em 1em;
   cursor: pointer;
 }
+
+/* ...existing CSS... */
+
+.schtickList ul {
+  list-style: disc inside;
+  margin: 0.5em 0;
+  padding-left: 1em;
+}
+
