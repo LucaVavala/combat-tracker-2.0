@@ -3,7 +3,260 @@
  * Weapons, Schticks, and In-App Database Panel.
  ***********************************************************************/
 
-// Hard-coded PCs (players)
+// Predefined Featured Foe Templates with Weapons and Schticks
+const featuredTemplates = {
+  "enforcer": {
+    attack: 13,
+    defense: 13,
+    toughness: 5,
+    speed: 7,
+    weapons: [
+      { name: "Thompson Center Arms Contender", damage: "12/3/7" },
+      { name: "CZ 75B", damage: "10/1/3" }
+    ],
+    schticks: [
+      "Headshot: After a successful attack, foe may decide that hero takes –2 penalty to skill checks until beginning of subsequent fight. Usable once per fight.",
+      "Pedal to the Metal [Driving]: When driving as the pursuer in a chase, gain +2 Driving if one or more PC drivers have fewer Chase Points.",
+      "Ram-Alama-Bam [Driving]: When driving, if foe rams a vehicle, gains +2 Frame. +4 Damage Value when foe hits a pedestrian."
+    ]
+  },
+  "hitman": {
+    attack: 15,
+    defense: 12,
+    toughness: 5,
+    speed: 8,
+    weapons: [
+      { name: "SVD Dragunov", damage: "13/5/3" },
+      { name: "Beretta 92 Centurion", damage: "10/2/3" },
+      { name: "Heckler & Koch MP5 K", damage: "10/3/1" }
+    ],
+    schticks: []
+  },
+  "securityHoncho": {
+    attack: 13,
+    defense: 14,
+    toughness: 5,
+    speed: 6,
+    weapons: [
+      { name: "Colt 1911A", damage: "10/2/4" },
+      { name: "Heckler & Koch MP5 K", damage: "10/3/1" },
+      { name: "Remington 870 Police", damage: "13/5/4" }
+    ],
+    schticks: []
+  },
+  "sinisterBodyguard": {
+    attack: 13,
+    defense: 13,
+    toughness: 5,
+    speed: 6,
+    weapons: [
+      { name: "Browning Hi-Power", damage: "10/2/3" }
+    ],
+    schticks: [
+      "Be the Shield: Spend 1 shot to lower bodyguard’s Defense by 2, increasing ally’s Defense by 2, until bodyguard goes down.",
+      "Shibuya Slide [Driving]: When driving as the evader in a chase, gain +2 Driving if one or more PC drivers have fewer Chase Points."
+    ]
+  },
+  "badBusinessman": {
+    attack: 13,
+    defense: 13,
+    toughness: 5,
+    speed: 6,
+    weapons: [
+      { name: "AMT Automag V", damage: "12/3/5" },
+      { name: "Beretta M12", damage: "10/5/6" },
+      { name: "Benelli 90 M3", damage: "13/5/4" }
+    ],
+    schticks: []
+  },
+  "giangHuWarrior": {
+    attack: 14,
+    defense: 13,
+    toughness: 5,
+    speed: 7,
+    weapons: [
+      { name: "Sword", damage: "10" }
+    ],
+    schticks: []
+  },
+  "martialArtist": {
+    attack: 13,
+    defense: 13,
+    toughness: 6,
+    speed: 7,
+    weapons: [
+      { name: "Unarmed strike", damage: "10" }
+    ],
+    schticks: []
+  },
+  "officer": {
+    attack: 13,
+    defense: 13,
+    toughness: 5,
+    speed: 6,
+    weapons: [
+      { name: "Norinco Tokarev", damage: "10/2/4" },
+      { name: "AK-47", damage: "13/5/1" }
+    ],
+    schticks: []
+  },
+  "insurgent": {
+    attack: 14,
+    defense: 13,
+    toughness: 5,
+    speed: 8,
+    weapons: [
+      { name: "Machete/indigenous short sword", damage: "10" },
+      { name: "AK-47", damage: "13/5/1" },
+      { name: "Lee-Enfield bolt-action rifle", damage: "12/5/4" }
+    ],
+    schticks: []
+  },
+  "wheelman": {
+    attack: 13,
+    defense: 13,
+    toughness: 5,
+    speed: 7,
+    weapons: [
+      { name: "Tire iron", damage: "10" }
+    ],
+    schticks: []
+  },
+  "sorcerousVassal": {
+    attack: 13,
+    defense: 13,
+    toughness: 5,
+    speed: 7,
+    weapons: [
+      { name: "Blast", damage: "10" }
+    ],
+    schticks: []
+  },
+  "tenThousandMan": {
+    attack: 13,
+    defense: 13,
+    toughness: 6,
+    speed: 6,
+    weapons: [
+      { name: "Intratec Tec-22", damage: "8/2/1" },
+      { name: "Buzzsaw Hand", damage: "11" }
+    ],
+    schticks: []
+  },
+  "cyberApe": {
+    attack: 14,
+    defense: 12,
+    toughness: 7,
+    speed: 7,
+    weapons: [
+      { name: "Chest-mounted machine gun", damage: "11/1/1" },
+      { name: "Bite", damage: "11" }
+    ],
+    schticks: []
+  },
+  "monster": {
+    attack: 14,
+    defense: 13,
+    toughness: 5,
+    speed: 7,
+    weapons: [
+      { name: "Claw, fang, horn, arm spike, etc.", damage: "11" }
+    ],
+    schticks: []
+  },
+  "gladiator": {
+    attack: 13,
+    defense: 13,
+    toughness: 6,
+    speed: 8,
+    weapons: [
+      { name: "Unarmed", damage: "9" },
+      { name: "Chain", damage: "11" },
+      { name: "Sword", damage: "11" }
+    ],
+    schticks: []
+  },
+  "mutant": {
+    attack: 13,
+    defense: 13,
+    toughness: 6,
+    speed: 7,
+    weapons: [
+      { name: "Force blast/natural weapon/super-punch", damage: "11" }
+    ],
+    schticks: []
+  },
+  "wastelander": {
+    attack: 13,
+    defense: 13,
+    toughness: 6,
+    speed: 7,
+    weapons: [
+      { name: "Unidentifiable shotgun", damage: "13/5/4" },
+      { name: "Unidentifiable revolver", damage: "11/3/5" }
+    ],
+    schticks: []
+  },
+  "sinisterScientist": {
+    attack: 14,
+    defense: 13,
+    toughness: 5,
+    speed: 7,
+    weapons: [
+      { name: "Heckler & Koch P7", damage: "10/2/4" }
+    ],
+    schticks: []
+  },
+  "keyJiangshi": {
+    attack: 15,
+    defense: 13,
+    toughness: 5,
+    speed: 7,
+    weapons: [
+      { name: "Claw", damage: "11" },
+      { name: "Bite", damage: "8" }
+    ],
+    schticks: [
+      "Contagion: After a successful Bite, the victim makes a Defense Check. On failure, the victim takes 1 Impairment until the end of the fight."
+    ]
+  },
+  "keySnakePerson": {
+    attack: 14,
+    defense: 12,
+    toughness: 5,
+    speed: 8,
+    weapons: [
+      { name: "Scimitar", damage: "10" }
+    ],
+    schticks: []
+  },
+  "niceGuyBadAss": {
+    attack: 16,
+    defense: 17,
+    toughness: 5,
+    speed: 9,
+    weapons: [
+      { name: "Unarmed mastery", damage: "16" }
+    ],
+    schticks: []
+  }
+};
+
+// Predefined Mook Templates – fixed stats; template only supplies a damage bonus.
+const mookTemplates = {
+  "handToHand8": { templateDamage: 8 },
+  "handToHand9": { templateDamage: 9 },
+  "handToHand10": { templateDamage: 10 },
+  "magic9": { templateDamage: 9 },
+  "ranged9": { templateDamage: 9 },
+  "ranged10": { templateDamage: 10 },
+  "ranged13": { templateDamage: 13 },
+  "mixed10H2H7R": { templateDamage: 10 },
+  "mixed9H2H10R": { templateDamage: 9 },
+  "mixed10H2H8R": { templateDamage: 10 }
+};
+
+// ------------------- Hard-coded PCs (players) -------------------
 const pcs = [
   { id: 100, name: "Ken", attack: 13, defense: 13, toughness: 6, speed: 8, fortune: 7, woundPoints: 0, isPC: true },
   { id: 101, name: "Oleg", attack: 14, backupAttack: 13, defense: 14, toughness: 7, speed: 7, fortune: 7, woundPoints: 0, isPC: true },
@@ -11,7 +264,7 @@ const pcs = [
   { id: 103, name: "Shen Dao", attack: 14, defense: 13, toughness: 6, speed: 7, fortune: 8, woundPoints: 0, isPC: true }
 ];
 
-// Array for NPC foes
+// ------------------- NPC Array and ID Counter -------------------
 let npcs = [];
 let npcIdCounter = 200;
 function getNextNpcId() {
@@ -417,7 +670,7 @@ function attachNpcListeners() {
       if (npc) { npc.attack--; if(npc.attack < 0) npc.attack = 0; updateNpcList(); logEvent(`Decreased ${npc.name}'s Attack to ${npc.attack}`); }
     });
   });
-  // (Include similar listeners for Defense, Toughness, Speed, Fortune, Wound Points, Mook Count, Remove buttons)
+  // (Repeat similar listeners for Defense, Toughness, Speed, Fortune, Wound Points, Mook Count, Remove buttons)
 }
 
 function updateAttackDropdowns() {
@@ -456,7 +709,12 @@ function updateAttackDropdowns() {
 }
 
 // ------------------- Modal Panel for Database Items -------------------
-// (currentNpcIdModal is declared only once above)
+let currentNpcIdModal = null;
+const dbPanel = document.getElementById('dbPanel');
+const dbClose = document.getElementById('dbClose');
+const weaponListDB = document.getElementById('weaponListDB');
+const schtickListDB = document.getElementById('schtickListDB');
+
 function openDBPanel(npcId) {
   currentNpcIdModal = npcId;
   // Populate weapons list
