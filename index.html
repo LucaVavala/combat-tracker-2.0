@@ -104,6 +104,21 @@
       <button id="importButton">Import Data</button>
     </section>
   </main>
+
+  <!-- Modal Panel for Database Items -->
+  <div id="dbPanel" class="modal">
+    <div class="modal-content">
+      <span id="dbClose" class="close">&times;</span>
+      <h2>Add Database Item</h2>
+      <h3>Weapons</h3>
+      <ul id="weaponListDB"></ul>
+      <h3>Schticks</h3>
+      <ul id="schtickListDB"></ul>
+    </div>
+  </div>
+
+  <!-- Include the database file first -->
+  <script src="database.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
