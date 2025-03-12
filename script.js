@@ -8,7 +8,7 @@
  *     Their template selection sets a "templateDamage" bonus.
  *   • Featured foes (and Boss/Uber Boss) use templates that include weapons and schticks.
  * - Each Featured Foe card has a '+' button that opens a modal panel to add Weapons and Schticks
- *   from the database (database.js).
+ *   from the in-app database (database.js).
  ***********************************************************************/
 
 // Hard-coded PCs (players)
@@ -26,7 +26,7 @@ function getNextNpcId() {
   return npcIdCounter++;
 }
 
-// Predefined Featured Foe Templates with Weapons, Schticks
+// Predefined Featured Foe Templates with Weapons and Schticks
 const featuredTemplates = {
   "enforcer": {
     attack: 13,
@@ -408,7 +408,8 @@ function updateNpcList() {
         cardHTML += `<div class="weaponList"><h4>Weapons:</h4><ul>`;
         npc.weapons.forEach(weapon => {
           const damageValue = weapon.damage.split("/")[0];
-          cardHTML += `<li>${weapon.name}: ${damageValue}</li>`;
+          // Wrap the weapon name in <strong> for bold title
+          cardHTML += `<li><strong>${weapon.name}</strong>: ${damageValue}</li>`;
         });
         cardHTML += `</ul></div>`;
       }
@@ -416,7 +417,8 @@ function updateNpcList() {
       if(npc.schticks && npc.schticks.length > 0) {
         cardHTML += `<div class="schtickList"><h4>Schticks:</h4><ul>`;
         npc.schticks.forEach(schtick => {
-          cardHTML += `<li>${schtick}</li>`;
+          // Wrap the schtick text in <strong> for emphasis
+          cardHTML += `<li><strong>${schtick}</strong></li>`;
         });
         cardHTML += `</ul></div>`;
       }
@@ -481,7 +483,7 @@ function openDBPanel(npcId) {
   weaponDatabase.forEach(item => {
     const li = document.createElement('li');
     const dmg = item.damage.split("/")[0];
-    li.textContent = `${item.name}: ${dmg}`;
+    li.innerHTML = `<strong>${item.name}</strong>: ${dmg}`;
     li.addEventListener('click', () => {
       addWeaponToNpc(item);
       closeDBPanel();
@@ -492,7 +494,7 @@ function openDBPanel(npcId) {
   schtickListDB.innerHTML = '';
   schtickDatabase.forEach(item => {
     const li = document.createElement('li');
-    li.textContent = item;
+    li.innerHTML = `<strong>${item}</strong>`;
     li.addEventListener('click', () => {
       addSchtickToNpc(item);
       closeDBPanel();
@@ -860,8 +862,8 @@ addEnemyForm.addEventListener('submit', (e) => {
       woundPoints: 0,
       attackImpair: 0,
       defenseImpair: 0,
-      weapons: template.weapons,   // attach weapons from template
-      schticks: template.schticks    // attach schticks from template
+      weapons: template.weapons,
+      schticks: template.schticks
     };
   } else {
     return;
@@ -1088,6 +1090,1274 @@ importFileInput.addEventListener('change', (e) => {
   };
   reader.readAsText(file);
 });
+
+// ------------------- Modal Panel for Database Items -------------------
+let currentNpcId = null;
+const dbPanel = document.getElementById('dbPanel');
+const dbClose = document.getElementById('dbClose');
+const weaponListDB = document.getElementById('weaponListDB');
+const schtickListDB = document.getElementById('schtickListDB');
+
+function openDBPanel(npcId) {
+  currentNpcId = npcId;
+  // Populate weapons list
+  weaponListDB.innerHTML = '';
+  weaponDatabase.forEach(item => {
+    const li = document.createElement('li');
+    const dmg = item.damage.split("/")[0];
+    li.innerHTML = `<strong>${item.name}</strong>: ${dmg}`;
+    li.addEventListener('click', () => {
+      addWeaponToNpc(item);
+      closeDBPanel();
+    });
+    weaponListDB.appendChild(li);
+  });
+  // Populate schticks list
+  schtickListDB.innerHTML = '';
+  schtickDatabase.forEach(item => {
+    const li = document.createElement('li');
+    li.innerHTML = `<strong>${item}</strong>`;
+    li.addEventListener('click', () => {
+      addSchtickToNpc(item);
+      closeDBPanel();
+    });
+    schtickListDB.appendChild(li);
+  });
+  dbPanel.style.display = "block";
+}
+
+function closeDBPanel() {
+  dbPanel.style.display = "none";
+  currentNpcId = null;
+}
+
+function addWeaponToNpc(weaponItem) {
+  const npc = npcs.find(npc => npc.id === currentNpcId);
+  if (npc) {
+    npc.weapons = npc.weapons || [];
+    if (!npc.weapons.some(w => w.name === weaponItem.name)) {
+      npc.weapons.push(weaponItem);
+      logEvent(`Added weapon "${weaponItem.name}" to ${npc.name}`);
+    }
+    updateNpcList();
+  }
+}
+
+function addSchtickToNpc(schtickItem) {
+  const npc = npcs.find(npc => npc.id === currentNpcId);
+  if (npc) {
+    npc.schticks = npc.schticks || [];
+    if (!npc.schticks.includes(schtickItem)) {
+      npc.schticks.push(schtickItem);
+      logEvent(`Added schtick to ${npc.name}: ${schtickItem}`);
+    }
+    updateNpcList();
+  }
+}
+
+dbClose.addEventListener('click', closeDBPanel);
+window.addEventListener('click', (e) => {
+  if (e.target === dbPanel) {
+    closeDBPanel();
+  }
+});
+
+// ------------------- Attach Listeners for NPC Buttons -------------------
+function attachNpcListeners() {
+  // '+' button for database panel
+  document.querySelectorAll('.addDB').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = parseInt(btn.dataset.id, 10);
+      openDBPanel(id);
+    });
+  });
+  document.querySelectorAll('.incAttack').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = parseInt(btn.dataset.id, 10);
+      const npc = npcs.find(npc => npc.id === id);
+      if (npc) { npc.attack++; updateNpcList(); logEvent(`Increased ${npc.name}'s Attack to ${npc.attack}`); }
+    });
+  });
+  document.querySelectorAll('.decAttack').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = parseInt(btn.dataset.id, 10);
+      const npc = npcs.find(npc => npc.id === id);
+      if (npc) { npc.attack--; if(npc.attack < 0) npc.attack = 0; updateNpcList(); logEvent(`Decreased ${npc.name}'s Attack to ${npc.attack}`); }
+    });
+  });
+  document.querySelectorAll('.incDefense').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = parseInt(btn.dataset.id, 10);
+      const npc = npcs.find(npc => npc.id === id);
+      if (npc) { npc.defense++; updateNpcList(); logEvent(`Increased ${npc.name}'s Defense to ${npc.defense}`); }
+    });
+  });
+  document.querySelectorAll('.decDefense').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = parseInt(btn.dataset.id, 10);
+      const npc = npcs.find(npc => npc.id === id);
+      if (npc) { npc.defense--; if(npc.defense < 0) npc.defense = 0; updateNpcList(); logEvent(`Decreased ${npc.name}'s Defense to ${npc.defense}`); }
+    });
+  });
+  document.querySelectorAll('.incToughness').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = parseInt(btn.dataset.id, 10);
+      const npc = npcs.find(npc => npc.id === id);
+      if (npc) { npc.toughness++; updateNpcList(); logEvent(`Increased ${npc.name}'s Toughness to ${npc.toughness}`); }
+    });
+  });
+  document.querySelectorAll('.decToughness').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = parseInt(btn.dataset.id, 10);
+      const npc = npcs.find(npc => npc.id === id);
+      if (npc) { npc.toughness--; if(npc.toughness < 0) npc.toughness = 0; updateNpcList(); logEvent(`Decreased ${npc.name}'s Toughness to ${npc.toughness}`); }
+    });
+  });
+  document.querySelectorAll('.incSpeed').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = parseInt(btn.dataset.id, 10);
+      const npc = npcs.find(npc => npc.id === id);
+      if (npc) { npc.speed++; updateNpcList(); logEvent(`Increased ${npc.name}'s Speed to ${npc.speed}`); }
+    });
+  });
+  document.querySelectorAll('.decSpeed').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = parseInt(btn.dataset.id, 10);
+      const npc = npcs.find(npc => npc.id === id);
+      if (npc) { npc.speed--; if(npc.speed < 0) npc.speed = 0; updateNpcList(); logEvent(`Decreased ${npc.name}'s Speed to ${npc.speed}`); }
+    });
+  });
+  document.querySelectorAll('.incFortune').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = parseInt(btn.dataset.id, 10);
+      const npc = npcs.find(npc => npc.id === id);
+      if (npc) { npc.fortune = (npc.fortune || 0) + 1; updateNpcList(); logEvent(`Increased ${npc.name}'s Fortune to ${npc.fortune}`); }
+    });
+  });
+  document.querySelectorAll('.decFortune').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = parseInt(btn.dataset.id, 10);
+      const npc = npcs.find(npc => npc.id === id);
+      if (npc) { npc.fortune = (npc.fortune || 0) - 1; if(npc.fortune < 0) npc.fortune = 0; updateNpcList(); logEvent(`Decreased ${npc.name}'s Fortune to ${npc.fortune}`); }
+    });
+  });
+  document.querySelectorAll('.incWound').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = parseInt(btn.dataset.id, 10);
+      const npc = npcs.find(npc => npc.id === id);
+      if (npc && npc.type !== "mook") { npc.woundPoints++; updateNpcList(); logEvent(`Increased ${npc.name}'s Wound Points to ${npc.woundPoints}`); }
+    });
+  });
+  document.querySelectorAll('.decWound').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = parseInt(btn.dataset.id, 10);
+      const npc = npcs.find(npc => npc.id === id);
+      if (npc && npc.type !== "mook") { npc.woundPoints--; if(npc.woundPoints < 0) npc.woundPoints = 0; updateNpcList(); logEvent(`Decreased ${npc.name}'s Wound Points to ${npc.woundPoints}`); }
+    });
+  });
+  document.querySelectorAll('.incMook').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = parseInt(btn.dataset.id, 10);
+      const npc = npcs.find(npc => npc.id === id);
+      if (npc && npc.type === "mook") { npc.count++; updateNpcList(); logEvent(`Increased ${npc.name}'s Mook Count to ${npc.count}`); }
+    });
+  });
+  document.querySelectorAll('.decMook').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = parseInt(btn.dataset.id, 10);
+      const npc = npcs.find(npc => npc.id === id);
+      if (npc && npc.type === "mook") { npc.count--; if(npc.count < 0) npc.count = 0; updateNpcList(); logEvent(`Decreased ${npc.name}'s Mook Count to ${npc.count}`); }
+    });
+  });
+  document.querySelectorAll('.removeEnemy').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = parseInt(btn.dataset.id, 10);
+      npcs = npcs.filter(npc => npc.id !== id);
+      updateAttackDropdowns();
+      updateNpcList();
+      logEvent(`Removed enemy with ID ${id}`);
+    });
+  });
+}
+
+// ------------------- Initial Population -------------------
+function init() {
+  updatePcList();
+  updateAttackDropdowns();
+}
+init();
+
+// ------------------- Update Dropdowns for Attack Forms -------------------
+function updateAttackDropdowns() {
+  playerAttackerSelect.innerHTML = '';
+  pcs.forEach(pc => {
+    const option = document.createElement('option');
+    option.value = pc.id;
+    option.textContent = pc.name;
+    playerAttackerSelect.appendChild(option);
+  });
+  npcTargetSelect.innerHTML = '';
+  npcs.forEach(npc => {
+    if(npc.type !== "mook" || npc.count > 0) {
+      const option = document.createElement('option');
+      option.value = npc.id;
+      option.textContent = npc.name;
+      npcTargetSelect.appendChild(option);
+    }
+  });
+  npcAttackerSelect.innerHTML = '';
+  npcs.forEach(npc => {
+    if(npc.type !== "mook" || npc.count > 0) {
+      const option = document.createElement('option');
+      option.value = npc.id;
+      option.textContent = npc.name;
+      npcAttackerSelect.appendChild(option);
+    }
+  });
+  playerTargetSelect.innerHTML = '';
+  pcs.forEach(pc => {
+    const option = document.createElement('option');
+    option.value = pc.id;
+    option.textContent = pc.name;
+    playerTargetSelect.appendChild(option);
+  });
+}
+
+// ------------------- Event Listeners for Add Enemy Form -------------------
+addEnemyForm.addEventListener('submit', (e) => {
+  e.preventDefault();
+  const name = enemyNameInput.value.trim();
+  let type = enemyTypeSelect.value;
+  let enemy;
+  
+  if (type === "mook") {
+    const templateKey = mookTemplateSelect.value;
+    if (!templateKey) {
+      alert("Please select a Mook Template.");
+      return;
+    }
+    const template = mookTemplates[templateKey];
+    enemy = {
+      id: getNextNpcId(),
+      name,
+      type,
+      attack: 8,
+      defense: 13,
+      toughness: 0,
+      speed: 5,
+      fortune: 0,
+      templateDamage: template.templateDamage
+    };
+    enemy.count = parseInt(mookCountInput.value, 10) || 1;
+  } else if (type === "featured" || type === "boss" || type === "uberboss") {
+    const templateKey = featuredTemplateSelect.value;
+    if (!templateKey) {
+      alert("Please select a Featured Foe Template.");
+      return;
+    }
+    const template = featuredTemplates[templateKey];
+    let baseAttack = template.attack;
+    let baseDefense = template.defense;
+    let baseToughness = template.toughness;
+    let baseSpeed = template.speed;
+    if (type === "boss") {
+      baseAttack += 3;
+      baseDefense += 2;
+      baseToughness += 2;
+      baseSpeed += 1;
+    } else if (type === "uberboss") {
+      baseAttack += 5;
+      baseDefense += 4;
+      baseToughness += 3;
+      baseSpeed += 2;
+    }
+    enemy = {
+      id: getNextNpcId(),
+      name,
+      type,
+      attack: baseAttack,
+      defense: baseDefense,
+      toughness: baseToughness,
+      speed: baseSpeed,
+      fortune: 0,
+      woundPoints: 0,
+      attackImpair: 0,
+      defenseImpair: 0,
+      weapons: template.weapons,
+      schticks: template.schticks
+    };
+  } else {
+    return;
+  }
+  
+  npcs.push(enemy);
+  updateAttackDropdowns();
+  updateNpcList();
+  addEnemyForm.reset();
+  mookCountContainer.style.display = "none";
+  mookTemplateContainer.style.display = "none";
+  featuredTemplateContainer.style.display = "none";
+  logEvent(`Added enemy: ${name} (${type})`);
+});
+
+// Show/hide additional fields based on enemy type.
+enemyTypeSelect.addEventListener('change', (e) => {
+  const selected = e.target.value;
+  if (selected === "mook") {
+    mookCountContainer.style.display = "block";
+    mookTemplateContainer.style.display = "block";
+    featuredTemplateContainer.style.display = "none";
+  } else if (selected === "featured" || selected === "boss" || selected === "uberboss") {
+    featuredTemplateContainer.style.display = "block";
+    mookCountContainer.style.display = "none";
+    mookTemplateContainer.style.display = "none";
+  } else {
+    mookCountContainer.style.display = "none";
+    mookTemplateContainer.style.display = "none";
+    featuredTemplateContainer.style.display = "none";
+  }
+});
+
+// ------------------- Attack Actions -------------------
+// PLAYER ATTACK: PC attacking NPC.
+playerActionForm.addEventListener('submit', (e) => {
+  e.preventDefault();
+  const attackerId = parseInt(playerAttackerSelect.value, 10);
+  const targetId = parseInt(npcTargetSelect.value, 10);
+  const attacker = pcs.find(pc => pc.id === attackerId);
+  const target = npcs.find(npc => npc.id === targetId);
+  if (!attacker || !target) return;
+  
+  let rollResult = parseInt(playerRollResultInput.value.replace('!', ''), 10);
+  const modifier = parseInt(playerModifierInput.value, 10) || 0;
+  rollResult += modifier;
+  
+  let smackdown = rollResult - target.defense;
+  if (smackdown < 0) smackdown = 0;
+  
+  const weaponDamage = parseInt(playerWeaponDamageInput.value, 10) || 0;
+  let damage = smackdown + weaponDamage - target.toughness;
+  if (damage < 0) damage = 0;
+  
+  let logMsg = `Player Attack: ${attacker.name} rolled ${rollResult} vs. ${target.name}'s Defense (${target.defense}) = ${smackdown}. `;
+  logMsg += `+ Weapon Damage (${weaponDamage}) - Toughness (${target.toughness}) = Damage ${damage}. `;
+  
+  if (target.type === "mook") {
+    if (damage > 0) {
+      target.count--;
+      if (target.count < 0) target.count = 0;
+      logMsg += `Mook hit! ${target.name} count decreased to ${target.count}.`;
+    } else {
+      logMsg += `No damage; mook count remains ${target.count}.`;
+    }
+  } else {
+    target.woundPoints += damage;
+    if (target.type === "featured") {
+      if (target.woundPoints >= 30) {
+        target.attackImpair = 2;
+        target.defenseImpair = 2;
+        logMsg += `Impairment -2 applied. `;
+      } else if (target.woundPoints >= 25) {
+        target.attackImpair = 1;
+        target.defenseImpair = 1;
+        logMsg += `Impairment -1 applied. `;
+      } else {
+        target.attackImpair = 0;
+        target.defenseImpair = 0;
+      }
+    } else if (target.type === "boss" || target.type === "uberboss") {
+      if (target.woundPoints >= 45) {
+        target.attackImpair = 2;
+        target.defenseImpair = 2;
+        logMsg += `Impairment -2 applied. `;
+      } else if (target.woundPoints >= 40) {
+        target.attackImpair = 1;
+        target.defenseImpair = 1;
+        logMsg += `Impairment -1 applied. `;
+      } else {
+        target.attackImpair = 0;
+        target.defenseImpair = 0;
+      }
+    }
+    logMsg += `${target.name} now has ${target.woundPoints} Wound Points.`;
+  }
+  
+  logEvent(logMsg);
+  updateNpcList();
+  playerActionForm.reset();
+  updateAttackDropdowns();
+});
+
+// NPC ATTACK: NPC attacking PC.
+npcRollDiceButton.addEventListener('click', () => {
+  const attackerId = parseInt(npcAttackerSelect.value, 10);
+  const attacker = npcs.find(npc => npc.id === attackerId);
+  if (!attacker) {
+    alert("No attacking NPC selected!");
+    return;
+  }
+  const modifier = parseInt(npcModifierInput.value, 10) || 0;
+  
+  const posInitial = rollDie();
+  const negInitial = rollDie();
+  const boxcars = (posInitial === 6 && negInitial === 6);
+  const posTotal = rollExplodingDie(posInitial);
+  const negTotal = rollExplodingDie(negInitial);
+  const diceOutcome = posTotal - negTotal;
+  
+  let baseAttack = attacker.attack;
+  
+  const finalCheck = baseAttack + diceOutcome + modifier;
+  npcRollResultDiv.dataset.finalCheck = finalCheck;
+  
+  const targetId = parseInt(playerTargetSelect.value, 10);
+  const target = pcs.find(pc => pc.id === targetId);
+  let finalCheckHTML = `<span>${finalCheck}</span>`;
+  if (target) {
+    if (finalCheck >= target.defense) {
+      finalCheckHTML = `<span class="hitResult">${finalCheck}</span>`;
+    } else {
+      finalCheckHTML = `<span class="missResult">${finalCheck}</span>`;
+    }
+  }
+  
+  let resultText = `Positive Total: ${posTotal} (init: ${posInitial}), Negative Total: ${negTotal} (init: ${negInitial}) → Outcome: ${diceOutcome}. `;
+  resultText += `Final Check = ${baseAttack} + ${diceOutcome} + Modifier (${modifier}) = ${finalCheckHTML}`;
+  if (boxcars) resultText += " (Boxcars!)";
+  npcRollResultDiv.innerHTML = resultText;
+  logEvent(`NPC Dice Roll: +die=${posTotal} (init ${posInitial}), -die=${negTotal} (init ${negInitial}), Outcome=${diceOutcome}. Final Check = ${baseAttack} + ${diceOutcome} + ${modifier} = ${finalCheck}${boxcars?" (Boxcars!)":""}`);
+});
+
+npcActionForm.addEventListener('submit', (e) => {
+  e.preventDefault();
+  const attackerId = parseInt(npcAttackerSelect.value, 10);
+  const targetId = parseInt(playerTargetSelect.value, 10);
+  const attacker = npcs.find(npc => npc.id === attackerId);
+  const target = pcs.find(pc => pc.id === targetId);
+  if (!attacker || !target) return;
+  
+  let finalCheck = parseInt(npcRollResultDiv.dataset.finalCheck || "0", 10);
+  if (isNaN(finalCheck) || finalCheck === 0) {
+    alert("Please roll the dice for NPC attack first.");
+    return;
+  }
+  
+  let smackdown = finalCheck - target.defense;
+  if (smackdown < 0) smackdown = 0;
+  
+  const weaponDamage = parseInt(npcWeaponDamageInput.value, 10) || 0;
+  let damage = smackdown + weaponDamage - target.toughness;
+  if (damage < 0) damage = 0;
+  
+  let logMsg = `NPC Attack: ${attacker.name} (Final Check ${finalCheck}) vs. ${target.name}'s Defense (${target.defense}) = ${smackdown}. `;
+  logMsg += `+ Weapon Damage (${weaponDamage}) - Toughness (${target.toughness}) = Damage ${damage}. `;
+  
+  target.woundPoints += damage;
+  logMsg += `${target.name} now has ${target.woundPoints} Wound Points.`;
+  
+  logEvent(logMsg);
+  updatePcList();
+  npcActionForm.reset();
+  npcRollResultDiv.textContent = "";
+  delete npcRollResultDiv.dataset.finalCheck;
+  updateAttackDropdowns();
+});
+
+// ------------------- Dice Roller Functions -------------------
+function rollDie() {
+  return Math.floor(Math.random() * 6) + 1;
+}
+function rollExplodingDie(initial) {
+  let total = initial;
+  while (initial === 6) {
+    initial = rollDie();
+    total += initial;
+  }
+  return total;
+}
+
+// ------------------- Data Export / Import -------------------
+exportButton.addEventListener('click', () => {
+  const data = { pcs, npcs };
+  const dataStr = JSON.stringify(data);
+  const blob = new Blob([dataStr], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "combatData.json";
+  a.click();
+  URL.revokeObjectURL(url);
+  logEvent("Exported combat data.");
+});
+importButton.addEventListener('click', () => {
+  importFileInput.click();
+});
+importFileInput.addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(evt) {
+    try {
+      const importedData = JSON.parse(evt.target.result);
+      npcs = importedData.npcs || [];
+      updateAttackDropdowns();
+      updatePcList();
+      updateNpcList();
+      logEvent("Imported combat data successfully.");
+    } catch (error) {
+      alert("Failed to import data: " + error);
+    }
+  };
+  reader.readAsText(file);
+});
+
+// ------------------- Modal Panel for Database Items -------------------
+let currentNpcId = null;
+const dbPanel = document.getElementById('dbPanel');
+const dbClose = document.getElementById('dbClose');
+const weaponListDB = document.getElementById('weaponListDB');
+const schtickListDB = document.getElementById('schtickListDB');
+
+function openDBPanel(npcId) {
+  currentNpcId = npcId;
+  // Populate weapons list
+  weaponListDB.innerHTML = '';
+  weaponDatabase.forEach(item => {
+    const li = document.createElement('li');
+    const dmg = item.damage.split("/")[0];
+    li.innerHTML = `<strong>${item.name}</strong>: ${dmg}`;
+    li.addEventListener('click', () => {
+      addWeaponToNpc(item);
+      closeDBPanel();
+    });
+    weaponListDB.appendChild(li);
+  });
+  // Populate schticks list
+  schtickListDB.innerHTML = '';
+  schtickDatabase.forEach(item => {
+    const li = document.createElement('li');
+    li.innerHTML = `<strong>${item}</strong>`;
+    li.addEventListener('click', () => {
+      addSchtickToNpc(item);
+      closeDBPanel();
+    });
+    schtickListDB.appendChild(li);
+  });
+  dbPanel.style.display = "block";
+}
+
+function closeDBPanel() {
+  dbPanel.style.display = "none";
+  currentNpcId = null;
+}
+
+function addWeaponToNpc(weaponItem) {
+  const npc = npcs.find(npc => npc.id === currentNpcId);
+  if (npc) {
+    npc.weapons = npc.weapons || [];
+    if (!npc.weapons.some(w => w.name === weaponItem.name)) {
+      npc.weapons.push(weaponItem);
+      logEvent(`Added weapon "${weaponItem.name}" to ${npc.name}`);
+    }
+    updateNpcList();
+  }
+}
+
+function addSchtickToNpc(schtickItem) {
+  const npc = npcs.find(npc => npc.id === currentNpcId);
+  if (npc) {
+    npc.schticks = npc.schticks || [];
+    if (!npc.schticks.includes(schtickItem)) {
+      npc.schticks.push(schtickItem);
+      logEvent(`Added schtick to ${npc.name}: ${schtickItem}`);
+    }
+    updateNpcList();
+  }
+}
+
+dbClose.addEventListener('click', closeDBPanel);
+window.addEventListener('click', (e) => {
+  if (e.target === dbPanel) {
+    closeDBPanel();
+  }
+});
+
+// ------------------- Attach Listeners for NPC Buttons -------------------
+function attachNpcListeners() {
+  document.querySelectorAll('.addDB').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = parseInt(btn.dataset.id, 10);
+      openDBPanel(id);
+    });
+  });
+  document.querySelectorAll('.incAttack').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = parseInt(btn.dataset.id, 10);
+      const npc = npcs.find(npc => npc.id === id);
+      if (npc) { npc.attack++; updateNpcList(); logEvent(`Increased ${npc.name}'s Attack to ${npc.attack}`); }
+    });
+  });
+  document.querySelectorAll('.decAttack').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = parseInt(btn.dataset.id, 10);
+      const npc = npcs.find(npc => npc.id === id);
+      if (npc) { npc.attack--; if(npc.attack < 0) npc.attack = 0; updateNpcList(); logEvent(`Decreased ${npc.name}'s Attack to ${npc.attack}`); }
+    });
+  });
+  document.querySelectorAll('.incDefense').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = parseInt(btn.dataset.id, 10);
+      const npc = npcs.find(npc => npc.id === id);
+      if (npc) { npc.defense++; updateNpcList(); logEvent(`Increased ${npc.name}'s Defense to ${npc.defense}`); }
+    });
+  });
+  document.querySelectorAll('.decDefense').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = parseInt(btn.dataset.id, 10);
+      const npc = npcs.find(npc => npc.id === id);
+      if (npc) { npc.defense--; if(npc.defense < 0) npc.defense = 0; updateNpcList(); logEvent(`Decreased ${npc.name}'s Defense to ${npc.defense}`); }
+    });
+  });
+  document.querySelectorAll('.incToughness').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = parseInt(btn.dataset.id, 10);
+      const npc = npcs.find(npc => npc.id === id);
+      if (npc) { npc.toughness++; updateNpcList(); logEvent(`Increased ${npc.name}'s Toughness to ${npc.toughness}`); }
+    });
+  });
+  document.querySelectorAll('.decToughness').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = parseInt(btn.dataset.id, 10);
+      const npc = npcs.find(npc => npc.id === id);
+      if (npc) { npc.toughness--; if(npc.toughness < 0) npc.toughness = 0; updateNpcList(); logEvent(`Decreased ${npc.name}'s Toughness to ${npc.toughness}`); }
+    });
+  });
+  document.querySelectorAll('.incSpeed').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = parseInt(btn.dataset.id, 10);
+      const npc = npcs.find(npc => npc.id === id);
+      if (npc) { npc.speed++; updateNpcList(); logEvent(`Increased ${npc.name}'s Speed to ${npc.speed}`); }
+    });
+  });
+  document.querySelectorAll('.decSpeed').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = parseInt(btn.dataset.id, 10);
+      const npc = npcs.find(npc => npc.id === id);
+      if (npc) { npc.speed--; if(npc.speed < 0) npc.speed = 0; updateNpcList(); logEvent(`Decreased ${npc.name}'s Speed to ${npc.speed}`); }
+    });
+  });
+  document.querySelectorAll('.incFortune').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = parseInt(btn.dataset.id, 10);
+      const npc = npcs.find(npc => npc.id === id);
+      if (npc) { npc.fortune = (npc.fortune || 0) + 1; updateNpcList(); logEvent(`Increased ${npc.name}'s Fortune to ${npc.fortune}`); }
+    });
+  });
+  document.querySelectorAll('.decFortune').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = parseInt(btn.dataset.id, 10);
+      const npc = npcs.find(npc => npc.id === id);
+      if (npc) { npc.fortune = (npc.fortune || 0) - 1; if(npc.fortune < 0) npc.fortune = 0; updateNpcList(); logEvent(`Decreased ${npc.name}'s Fortune to ${npc.fortune}`); }
+    });
+  });
+  document.querySelectorAll('.incWound').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = parseInt(btn.dataset.id, 10);
+      const npc = npcs.find(npc => npc.id === id);
+      if (npc && npc.type !== "mook") { npc.woundPoints++; updateNpcList(); logEvent(`Increased ${npc.name}'s Wound Points to ${npc.woundPoints}`); }
+    });
+  });
+  document.querySelectorAll('.decWound').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = parseInt(btn.dataset.id, 10);
+      const npc = npcs.find(npc => npc.id === id);
+      if (npc && npc.type !== "mook") { npc.woundPoints--; if(npc.woundPoints < 0) npc.woundPoints = 0; updateNpcList(); logEvent(`Decreased ${npc.name}'s Wound Points to ${npc.woundPoints}`); }
+    });
+  });
+  document.querySelectorAll('.incMook').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = parseInt(btn.dataset.id, 10);
+      const npc = npcs.find(npc => npc.id === id);
+      if (npc && npc.type === "mook") { npc.count++; updateNpcList(); logEvent(`Increased ${npc.name}'s Mook Count to ${npc.count}`); }
+    });
+  });
+  document.querySelectorAll('.decMook').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = parseInt(btn.dataset.id, 10);
+      const npc = npcs.find(npc => npc.id === id);
+      if (npc && npc.type === "mook") { npc.count--; if(npc.count < 0) npc.count = 0; updateNpcList(); logEvent(`Decreased ${npc.name}'s Mook Count to ${npc.count}`); }
+    });
+  });
+  document.querySelectorAll('.removeEnemy').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = parseInt(btn.dataset.id, 10);
+      npcs = npcs.filter(npc => npc.id !== id);
+      updateAttackDropdowns();
+      updateNpcList();
+      logEvent(`Removed enemy with ID ${id}`);
+    });
+  });
+}
+
+// ------------------- Initial Population -------------------
+function init() {
+  updatePcList();
+  updateAttackDropdowns();
+}
+init();
+
+// ------------------- Update Dropdowns for Attack Forms -------------------
+function updateAttackDropdowns() {
+  playerAttackerSelect.innerHTML = '';
+  pcs.forEach(pc => {
+    const option = document.createElement('option');
+    option.value = pc.id;
+    option.textContent = pc.name;
+    playerAttackerSelect.appendChild(option);
+  });
+  npcTargetSelect.innerHTML = '';
+  npcs.forEach(npc => {
+    if(npc.type !== "mook" || npc.count > 0) {
+      const option = document.createElement('option');
+      option.value = npc.id;
+      option.textContent = npc.name;
+      npcTargetSelect.appendChild(option);
+    }
+  });
+  npcAttackerSelect.innerHTML = '';
+  npcs.forEach(npc => {
+    if(npc.type !== "mook" || npc.count > 0) {
+      const option = document.createElement('option');
+      option.value = npc.id;
+      option.textContent = npc.name;
+      npcAttackerSelect.appendChild(option);
+    }
+  });
+  playerTargetSelect.innerHTML = '';
+  pcs.forEach(pc => {
+    const option = document.createElement('option');
+    option.value = pc.id;
+    option.textContent = pc.name;
+    playerTargetSelect.appendChild(option);
+  });
+}
+
+// ------------------- Event Listeners for Add Enemy Form -------------------
+addEnemyForm.addEventListener('submit', (e) => {
+  e.preventDefault();
+  const name = enemyNameInput.value.trim();
+  let type = enemyTypeSelect.value;
+  let enemy;
+  
+  if (type === "mook") {
+    const templateKey = mookTemplateSelect.value;
+    if (!templateKey) {
+      alert("Please select a Mook Template.");
+      return;
+    }
+    const template = mookTemplates[templateKey];
+    enemy = {
+      id: getNextNpcId(),
+      name,
+      type,
+      attack: 8,
+      defense: 13,
+      toughness: 0,
+      speed: 5,
+      fortune: 0,
+      templateDamage: template.templateDamage
+    };
+    enemy.count = parseInt(mookCountInput.value, 10) || 1;
+  } else if (type === "featured" || type === "boss" || type === "uberboss") {
+    const templateKey = featuredTemplateSelect.value;
+    if (!templateKey) {
+      alert("Please select a Featured Foe Template.");
+      return;
+    }
+    const template = featuredTemplates[templateKey];
+    let baseAttack = template.attack;
+    let baseDefense = template.defense;
+    let baseToughness = template.toughness;
+    let baseSpeed = template.speed;
+    if (type === "boss") {
+      baseAttack += 3;
+      baseDefense += 2;
+      baseToughness += 2;
+      baseSpeed += 1;
+    } else if (type === "uberboss") {
+      baseAttack += 5;
+      baseDefense += 4;
+      baseToughness += 3;
+      baseSpeed += 2;
+    }
+    enemy = {
+      id: getNextNpcId(),
+      name,
+      type,
+      attack: baseAttack,
+      defense: baseDefense,
+      toughness: baseToughness,
+      speed: baseSpeed,
+      fortune: 0,
+      woundPoints: 0,
+      attackImpair: 0,
+      defenseImpair: 0,
+      weapons: template.weapons,
+      schticks: template.schticks
+    };
+  } else {
+    return;
+  }
+  
+  npcs.push(enemy);
+  updateAttackDropdowns();
+  updateNpcList();
+  addEnemyForm.reset();
+  mookCountContainer.style.display = "none";
+  mookTemplateContainer.style.display = "none";
+  featuredTemplateContainer.style.display = "none";
+  logEvent(`Added enemy: ${name} (${type})`);
+});
+
+// Show/hide additional fields based on enemy type.
+enemyTypeSelect.addEventListener('change', (e) => {
+  const selected = e.target.value;
+  if (selected === "mook") {
+    mookCountContainer.style.display = "block";
+    mookTemplateContainer.style.display = "block";
+    featuredTemplateContainer.style.display = "none";
+  } else if (selected === "featured" || selected === "boss" || selected === "uberboss") {
+    featuredTemplateContainer.style.display = "block";
+    mookCountContainer.style.display = "none";
+    mookTemplateContainer.style.display = "none";
+  } else {
+    mookCountContainer.style.display = "none";
+    mookTemplateContainer.style.display = "none";
+    featuredTemplateContainer.style.display = "none";
+  }
+});
+
+// ------------------- Attack Actions -------------------
+playerActionForm.addEventListener('submit', (e) => {
+  e.preventDefault();
+  const attackerId = parseInt(playerAttackerSelect.value, 10);
+  const targetId = parseInt(npcTargetSelect.value, 10);
+  const attacker = pcs.find(pc => pc.id === attackerId);
+  const target = npcs.find(npc => npc.id === targetId);
+  if (!attacker || !target) return;
+  
+  let rollResult = parseInt(playerRollResultInput.value.replace('!', ''), 10);
+  const modifier = parseInt(playerModifierInput.value, 10) || 0;
+  rollResult += modifier;
+  
+  let smackdown = rollResult - target.defense;
+  if (smackdown < 0) smackdown = 0;
+  
+  const weaponDamage = parseInt(playerWeaponDamageInput.value, 10) || 0;
+  let damage = smackdown + weaponDamage - target.toughness;
+  if (damage < 0) damage = 0;
+  
+  let logMsg = `Player Attack: ${attacker.name} rolled ${rollResult} vs. ${target.name}'s Defense (${target.defense}) = ${smackdown}. `;
+  logMsg += `+ Weapon Damage (${weaponDamage}) - Toughness (${target.toughness}) = Damage ${damage}. `;
+  
+  if (target.type === "mook") {
+    if (damage > 0) {
+      target.count--;
+      if (target.count < 0) target.count = 0;
+      logMsg += `Mook hit! ${target.name} count decreased to ${target.count}.`;
+    } else {
+      logMsg += `No damage; mook count remains ${target.count}.`;
+    }
+  } else {
+    target.woundPoints += damage;
+    if (target.type === "featured") {
+      if (target.woundPoints >= 30) {
+        target.attackImpair = 2;
+        target.defenseImpair = 2;
+        logMsg += `Impairment -2 applied. `;
+      } else if (target.woundPoints >= 25) {
+        target.attackImpair = 1;
+        target.defenseImpair = 1;
+        logMsg += `Impairment -1 applied. `;
+      } else {
+        target.attackImpair = 0;
+        target.defenseImpair = 0;
+      }
+    } else if (target.type === "boss" || target.type === "uberboss") {
+      if (target.woundPoints >= 45) {
+        target.attackImpair = 2;
+        target.defenseImpair = 2;
+        logMsg += `Impairment -2 applied. `;
+      } else if (target.woundPoints >= 40) {
+        target.attackImpair = 1;
+        target.defenseImpair = 1;
+        logMsg += `Impairment -1 applied. `;
+      } else {
+        target.attackImpair = 0;
+        target.defenseImpair = 0;
+      }
+    }
+    logMsg += `${target.name} now has ${target.woundPoints} Wound Points.`;
+  }
+  
+  logEvent(logMsg);
+  updateNpcList();
+  playerActionForm.reset();
+  updateAttackDropdowns();
+});
+
+npcRollDiceButton.addEventListener('click', () => {
+  const attackerId = parseInt(npcAttackerSelect.value, 10);
+  const attacker = npcs.find(npc => npc.id === attackerId);
+  if (!attacker) {
+    alert("No attacking NPC selected!");
+    return;
+  }
+  const modifier = parseInt(npcModifierInput.value, 10) || 0;
+  
+  const posInitial = rollDie();
+  const negInitial = rollDie();
+  const boxcars = (posInitial === 6 && negInitial === 6);
+  const posTotal = rollExplodingDie(posInitial);
+  const negTotal = rollExplodingDie(negInitial);
+  const diceOutcome = posTotal - negTotal;
+  
+  let baseAttack = attacker.attack;
+  
+  const finalCheck = baseAttack + diceOutcome + modifier;
+  npcRollResultDiv.dataset.finalCheck = finalCheck;
+  
+  const targetId = parseInt(playerTargetSelect.value, 10);
+  const target = pcs.find(pc => pc.id === targetId);
+  let finalCheckHTML = `<span>${finalCheck}</span>`;
+  if (target) {
+    if (finalCheck >= target.defense) {
+      finalCheckHTML = `<span class="hitResult">${finalCheck}</span>`;
+    } else {
+      finalCheckHTML = `<span class="missResult">${finalCheck}</span>`;
+    }
+  }
+  
+  let resultText = `Positive Total: ${posTotal} (init: ${posInitial}), Negative Total: ${negTotal} (init: ${negInitial}) → Outcome: ${diceOutcome}. `;
+  resultText += `Final Check = ${baseAttack} + ${diceOutcome} + Modifier (${modifier}) = ${finalCheckHTML}`;
+  if (boxcars) resultText += " (Boxcars!)";
+  npcRollResultDiv.innerHTML = resultText;
+  logEvent(`NPC Dice Roll: +die=${posTotal} (init ${posInitial}), -die=${negTotal} (init ${negInitial}), Outcome=${diceOutcome}. Final Check = ${baseAttack} + ${diceOutcome} + ${modifier} = ${finalCheck}${boxcars?" (Boxcars!)":""}`);
+});
+
+npcActionForm.addEventListener('submit', (e) => {
+  e.preventDefault();
+  const attackerId = parseInt(npcAttackerSelect.value, 10);
+  const targetId = parseInt(playerTargetSelect.value, 10);
+  const attacker = npcs.find(npc => npc.id === attackerId);
+  const target = pcs.find(pc => pc.id === targetId);
+  if (!attacker || !target) return;
+  
+  let finalCheck = parseInt(npcRollResultDiv.dataset.finalCheck || "0", 10);
+  if (isNaN(finalCheck) || finalCheck === 0) {
+    alert("Please roll the dice for NPC attack first.");
+    return;
+  }
+  
+  let smackdown = finalCheck - target.defense;
+  if (smackdown < 0) smackdown = 0;
+  
+  const weaponDamage = parseInt(npcWeaponDamageInput.value, 10) || 0;
+  let damage = smackdown + weaponDamage - target.toughness;
+  if (damage < 0) damage = 0;
+  
+  let logMsg = `NPC Attack: ${attacker.name} (Final Check ${finalCheck}) vs. ${target.name}'s Defense (${target.defense}) = ${smackdown}. `;
+  logMsg += `+ Weapon Damage (${weaponDamage}) - Toughness (${target.toughness}) = Damage ${damage}. `;
+  
+  target.woundPoints += damage;
+  logMsg += `${target.name} now has ${target.woundPoints} Wound Points.`;
+  
+  logEvent(logMsg);
+  updatePcList();
+  npcActionForm.reset();
+  npcRollResultDiv.textContent = "";
+  delete npcRollResultDiv.dataset.finalCheck;
+  updateAttackDropdowns();
+});
+
+// ------------------- Dice Roller Functions -------------------
+function rollDie() {
+  return Math.floor(Math.random() * 6) + 1;
+}
+function rollExplodingDie(initial) {
+  let total = initial;
+  while (initial === 6) {
+    initial = rollDie();
+    total += initial;
+  }
+  return total;
+}
+
+// ------------------- Data Export / Import -------------------
+exportButton.addEventListener('click', () => {
+  const data = { pcs, npcs };
+  const dataStr = JSON.stringify(data);
+  const blob = new Blob([dataStr], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "combatData.json";
+  a.click();
+  URL.revokeObjectURL(url);
+  logEvent("Exported combat data.");
+});
+importButton.addEventListener('click', () => {
+  importFileInput.click();
+});
+importFileInput.addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(evt) {
+    try {
+      const importedData = JSON.parse(evt.target.result);
+      npcs = importedData.npcs || [];
+      updateAttackDropdowns();
+      updatePcList();
+      updateNpcList();
+      logEvent("Imported combat data successfully.");
+    } catch (error) {
+      alert("Failed to import data: " + error);
+    }
+  };
+  reader.readAsText(file);
+});
+
+// ------------------- Modal Panel for Database Items -------------------
+let currentNpcId = null;
+const dbPanel = document.getElementById('dbPanel');
+const dbClose = document.getElementById('dbClose');
+const weaponListDB = document.getElementById('weaponListDB');
+const schtickListDB = document.getElementById('schtickListDB');
+
+function openDBPanel(npcId) {
+  currentNpcId = npcId;
+  // Populate weapons list
+  weaponListDB.innerHTML = '';
+  weaponDatabase.forEach(item => {
+    const li = document.createElement('li');
+    const dmg = item.damage.split("/")[0];
+    li.innerHTML = `<strong>${item.name}</strong>: ${dmg}`;
+    li.addEventListener('click', () => {
+      addWeaponToNpc(item);
+      closeDBPanel();
+    });
+    weaponListDB.appendChild(li);
+  });
+  // Populate schticks list
+  schtickListDB.innerHTML = '';
+  schtickDatabase.forEach(item => {
+    const li = document.createElement('li');
+    li.innerHTML = `<strong>${item}</strong>`;
+    li.addEventListener('click', () => {
+      addSchtickToNpc(item);
+      closeDBPanel();
+    });
+    schtickListDB.appendChild(li);
+  });
+  dbPanel.style.display = "block";
+}
+
+function closeDBPanel() {
+  dbPanel.style.display = "none";
+  currentNpcId = null;
+}
+
+function addWeaponToNpc(weaponItem) {
+  const npc = npcs.find(npc => npc.id === currentNpcId);
+  if (npc) {
+    npc.weapons = npc.weapons || [];
+    if (!npc.weapons.some(w => w.name === weaponItem.name)) {
+      npc.weapons.push(weaponItem);
+      logEvent(`Added weapon "${weaponItem.name}" to ${npc.name}`);
+    }
+    updateNpcList();
+  }
+}
+
+function addSchtickToNpc(schtickItem) {
+  const npc = npcs.find(npc => npc.id === currentNpcId);
+  if (npc) {
+    npc.schticks = npc.schticks || [];
+    if (!npc.schticks.includes(schtickItem)) {
+      npc.schticks.push(schtickItem);
+      logEvent(`Added schtick to ${npc.name}: ${schtickItem}`);
+    }
+    updateNpcList();
+  }
+}
+
+dbClose.addEventListener('click', closeDBPanel);
+window.addEventListener('click', (e) => {
+  if (e.target === dbPanel) {
+    closeDBPanel();
+  }
+});
+
+// ------------------- Attach Listeners for NPC Buttons -------------------
+function attachNpcListeners() {
+  document.querySelectorAll('.addDB').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = parseInt(btn.dataset.id, 10);
+      openDBPanel(id);
+    });
+  });
+  document.querySelectorAll('.incAttack').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = parseInt(btn.dataset.id, 10);
+      const npc = npcs.find(npc => npc.id === id);
+      if (npc) { npc.attack++; updateNpcList(); logEvent(`Increased ${npc.name}'s Attack to ${npc.attack}`); }
+    });
+  });
+  document.querySelectorAll('.decAttack').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = parseInt(btn.dataset.id, 10);
+      const npc = npcs.find(npc => npc.id === id);
+      if (npc) { npc.attack--; if(npc.attack < 0) npc.attack = 0; updateNpcList(); logEvent(`Decreased ${npc.name}'s Attack to ${npc.attack}`); }
+    });
+  });
+  document.querySelectorAll('.incDefense').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = parseInt(btn.dataset.id, 10);
+      const npc = npcs.find(npc => npc.id === id);
+      if (npc) { npc.defense++; updateNpcList(); logEvent(`Increased ${npc.name}'s Defense to ${npc.defense}`); }
+    });
+  });
+  document.querySelectorAll('.decDefense').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = parseInt(btn.dataset.id, 10);
+      const npc = npcs.find(npc => npc.id === id);
+      if (npc) { npc.defense--; if(npc.defense < 0) npc.defense = 0; updateNpcList(); logEvent(`Decreased ${npc.name}'s Defense to ${npc.defense}`); }
+    });
+  });
+  document.querySelectorAll('.incToughness').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = parseInt(btn.dataset.id, 10);
+      const npc = npcs.find(npc => npc.id === id);
+      if (npc) { npc.toughness++; updateNpcList(); logEvent(`Increased ${npc.name}'s Toughness to ${npc.toughness}`); }
+    });
+  });
+  document.querySelectorAll('.decToughness').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = parseInt(btn.dataset.id, 10);
+      const npc = npcs.find(npc => npc.id === id);
+      if (npc) { npc.toughness--; if(npc.toughness < 0) npc.toughness = 0; updateNpcList(); logEvent(`Decreased ${npc.name}'s Toughness to ${npc.toughness}`); }
+    });
+  });
+  document.querySelectorAll('.incSpeed').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = parseInt(btn.dataset.id, 10);
+      const npc = npcs.find(npc => npc.id === id);
+      if (npc) { npc.speed++; updateNpcList(); logEvent(`Increased ${npc.name}'s Speed to ${npc.speed}`); }
+    });
+  });
+  document.querySelectorAll('.decSpeed').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = parseInt(btn.dataset.id, 10);
+      const npc = npcs.find(npc => npc.id === id);
+      if (npc) { npc.speed--; if(npc.speed < 0) npc.speed = 0; updateNpcList(); logEvent(`Decreased ${npc.name}'s Speed to ${npc.speed}`); }
+    });
+  });
+  document.querySelectorAll('.incFortune').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = parseInt(btn.dataset.id, 10);
+      const npc = npcs.find(npc => npc.id === id);
+      if (npc) { npc.fortune = (npc.fortune || 0) + 1; updateNpcList(); logEvent(`Increased ${npc.name}'s Fortune to ${npc.fortune}`); }
+    });
+  });
+  document.querySelectorAll('.decFortune').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = parseInt(btn.dataset.id, 10);
+      const npc = npcs.find(npc => npc.id === id);
+      if (npc) { npc.fortune = (npc.fortune || 0) - 1; if(npc.fortune < 0) npc.fortune = 0; updateNpcList(); logEvent(`Decreased ${npc.name}'s Fortune to ${npc.fortune}`); }
+    });
+  });
+  document.querySelectorAll('.incWound').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = parseInt(btn.dataset.id, 10);
+      const npc = npcs.find(npc => npc.id === id);
+      if (npc && npc.type !== "mook") { npc.woundPoints++; updateNpcList(); logEvent(`Increased ${npc.name}'s Wound Points to ${npc.woundPoints}`); }
+    });
+  });
+  document.querySelectorAll('.decWound').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = parseInt(btn.dataset.id, 10);
+      const npc = npcs.find(npc => npc.id === id);
+      if (npc && npc.type !== "mook") { npc.woundPoints--; if(npc.woundPoints < 0) npc.woundPoints = 0; updateNpcList(); logEvent(`Decreased ${npc.name}'s Wound Points to ${npc.woundPoints}`); }
+    });
+  });
+  document.querySelectorAll('.incMook').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = parseInt(btn.dataset.id, 10);
+      const npc = npcs.find(npc => npc.id === id);
+      if (npc && npc.type === "mook") { npc.count++; updateNpcList(); logEvent(`Increased ${npc.name}'s Mook Count to ${npc.count}`); }
+    });
+  });
+  document.querySelectorAll('.decMook').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = parseInt(btn.dataset.id, 10);
+      const npc = npcs.find(npc => npc.id === id);
+      if (npc && npc.type === "mook") { npc.count--; if(npc.count < 0) npc.count = 0; updateNpcList(); logEvent(`Decreased ${npc.name}'s Mook Count to ${npc.count}`); }
+    });
+  });
+  document.querySelectorAll('.removeEnemy').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = parseInt(btn.dataset.id, 10);
+      npcs = npcs.filter(npc => npc.id !== id);
+      updateAttackDropdowns();
+      updateNpcList();
+      logEvent(`Removed enemy with ID ${id}`);
+    });
+  });
+}
+
+// ------------------- Initial Population -------------------
+function init() {
+  updatePcList();
+  updateAttackDropdowns();
+}
+init();
+
+// ------------------- Update Dropdowns for Attack Forms -------------------
+function updateAttackDropdowns() {
+  playerAttackerSelect.innerHTML = '';
+  pcs.forEach(pc => {
+    const option = document.createElement('option');
+    option.value = pc.id;
+    option.textContent = pc.name;
+    playerAttackerSelect.appendChild(option);
+  });
+  npcTargetSelect.innerHTML = '';
+  npcs.forEach(npc => {
+    if(npc.type !== "mook" || npc.count > 0) {
+      const option = document.createElement('option');
+      option.value = npc.id;
+      option.textContent = npc.name;
+      npcTargetSelect.appendChild(option);
+    }
+  });
+  npcAttackerSelect.innerHTML = '';
+  npcs.forEach(npc => {
+    if(npc.type !== "mook" || npc.count > 0) {
+      const option = document.createElement('option');
+      option.value = npc.id;
+      option.textContent = npc.name;
+      npcAttackerSelect.appendChild(option);
+    }
+  });
+  playerTargetSelect.innerHTML = '';
+  pcs.forEach(pc => {
+    const option = document.createElement('option');
+    option.value = pc.id;
+    option.textContent = pc.name;
+    playerTargetSelect.appendChild(option);
+  });
+}
 
 // ------------------- Event Log Helper -------------------
 function logEvent(message) {
